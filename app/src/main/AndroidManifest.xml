@@ -3,13 +3,15 @@
     package="com.zaidzakir.cryptocurrencytracker">
 
     <application
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CryptoCurrencyTracker">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity"/>
+        <activity android:name=".ui.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

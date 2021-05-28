@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
+    app:startDestination="@id/newsFragment">
+
+    <fragment
+        android:id="@+id/cryptoTrackerFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.CryptoTrackerFragment"
+        android:label="CryptoTrackerFragment" >
+        <action
+            android:id="@+id/action_cryptoTrackerFragment_to_myWalletFragment"
+            app:destination="@id/myWalletFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/myWalletFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.MyWalletFragment"
+        android:label="MyWalletFragment" >
+        <action
+            android:id="@+id/action_myWalletFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newsFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.NewsFragment"
+        android:label="NewsFragment" >
+        <action
+            android:id="@+id/action_newsFragment_to_cryptoTrackerFragment"
+            app:destination="@id/cryptoTrackerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.SettingsFragment"
+        android:label="SettingsFragment" />
+</navigation>
