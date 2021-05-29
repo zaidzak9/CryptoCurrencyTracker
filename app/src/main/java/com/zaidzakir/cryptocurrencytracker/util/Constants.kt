@@ -5,5 +5,5 @@ package com.zaidzakir.cryptocurrencytracker.util
  */
 object Constants {
 
-    const val BASE_URL = "https://api.lunarcrush.com/v2?"
+    const val BASE_URL = "https://api.lunarcrush.com/"
 }

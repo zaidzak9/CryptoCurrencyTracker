@@ -1,6 +1,8 @@
 package com.zaidzakir.cryptocurrencytracker.di
 
-import com.zaidzakir.cryptocurrencytracker.repositories.remote.LunarCrushApi
+import com.zaidzakir.cryptocurrencytracker.data.remote.LunarCrushApi
+import com.zaidzakir.cryptocurrencytracker.repositories.remote.CryptoRepositories
+import com.zaidzakir.cryptocurrencytracker.repositories.remote.DefaultRepository
 import com.zaidzakir.cryptocurrencytracker.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -26,4 +28,10 @@ object AppModule {
             .build()
             .create(LunarCrushApi::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideDefaultRepository(
+        lunarCrushApi: LunarCrushApi
+    ) = DefaultRepository(lunarCrushApi) as CryptoRepositories
 }
