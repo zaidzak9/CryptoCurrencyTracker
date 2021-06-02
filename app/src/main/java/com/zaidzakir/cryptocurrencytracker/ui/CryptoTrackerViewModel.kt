@@ -21,8 +21,8 @@ class CryptoTrackerViewModel @Inject constructor(
 ): ViewModel() {
 
     sealed class Events{
-        class Success(val resultText:String):Events()
-        class Failure(val errorText:String):Events()
+        class Success(resultText:String):Events()
+        class Failure(errorText:String):Events()
         object Loading : Events()
         object Empty : Events()
     }
