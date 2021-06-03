@@ -27,31 +27,5 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
         bottomNavigationView.labelVisibilityMode = LABEL_VISIBILITY_LABELED
 
-        cryptoViewModel.getCryptoMarket()
-
-        lifecycleScope.launchWhenStarted {
-            cryptoViewModel.cryptoMarketFlow.collect{cryptoEvent ->
-                when(cryptoEvent){
-                    is CryptoTrackerViewModel.Events.Success -> {
-                        progressBar.isVisible = false
-                        Snackbar.make(
-                           findViewById(android.R.id.content),
-                            "Crypto api success",
-                            Snackbar.LENGTH_LONG).show()
-                    }
-                    is CryptoTrackerViewModel.Events.Failure -> {
-                        progressBar.isVisible = false
-                        Snackbar.make(
-                            findViewById(android.R.id.content),
-                            "Crypto api Failure",
-                            Snackbar.LENGTH_LONG).show()
-                    }
-                    is CryptoTrackerViewModel.Events.Loading -> {
-                        progressBar.isVisible = true
-                    }
-                    else -> Unit
-                }
-            }
-        }
     }
 }

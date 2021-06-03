@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.zaidzakir.cryptocurrencytracker.R
+import dagger.hilt.android.AndroidEntryPoint
 
 /**
  *Created by Zaid Zakir
  */
+@AndroidEntryPoint
 class NewsFragment : Fragment(R.layout.fragment_news) {
 
 

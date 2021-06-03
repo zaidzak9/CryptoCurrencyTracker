@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zaidzakir.cryptocurrencytracker.R
+import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
 import com.zaidzakir.cryptocurrencytracker.data.remote.response.CrypoMarketMainResponse
+import kotlinx.android.synthetic.main.latest_crypto_info.view.*
 import kotlinx.android.synthetic.main.news_article_info.view.*
 
 /**
@@ -18,17 +20,17 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
 
     inner class CryptoViewHolder(itemView: View):RecyclerView.ViewHolder(itemView)
 
-    private val differentCallback = object : DiffUtil.ItemCallback<CrypoMarketMainResponse>(){
-        override fun areItemsTheSame(oldItem: CrypoMarketMainResponse, newItem: CrypoMarketMainResponse): Boolean {
-            return oldItem.data == newItem.data
+    private val differentCallback = object : DiffUtil.ItemCallback<CoinData>(){
+        override fun areItemsTheSame(oldItem: CoinData, newItem: CoinData): Boolean {
+            return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: CrypoMarketMainResponse, newItem: CrypoMarketMainResponse): Boolean {
+        override fun areContentsTheSame(oldItem: CoinData, newItem: CoinData): Boolean {
             return oldItem == newItem
         }
     }
 
-    private val differ = AsyncListDiffer(this,differentCallback)
+    val differ = AsyncListDiffer(this,differentCallback)
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CryptoViewHolder {
@@ -43,8 +45,8 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
         val crypto = differ.currentList[position]
         holder.itemView.apply {
             //Glide.with(this).load(crypto.data.get(position)).into(ivCryptoImage)
-            tvCryptoName.text = crypto.data[position].n
-            tvCryptoPrice.text = crypto.data[position].p.toString()
+            tvCryptoName.text = crypto.n
+            tvCryptoPrice.text = crypto.p.toString()
             setOnClickListener {
                 onItemClickListener?.let {
                     it(crypto)
@@ -53,9 +55,9 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
         }
     }
 
-    private var onItemClickListener:((CrypoMarketMainResponse) -> Unit)? = null
+    private var onItemClickListener:((CoinData) -> Unit)? = null
 
-    fun setOnItemClickListener(listener:(CrypoMarketMainResponse) -> Unit){
+    fun setOnItemClickListener(listener:(CoinData) -> Unit){
         onItemClickListener = listener
     }
 }
