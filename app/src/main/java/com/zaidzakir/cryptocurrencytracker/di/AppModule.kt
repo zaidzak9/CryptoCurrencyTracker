@@ -50,8 +50,9 @@ object AppModule {
     @Singleton
     @Provides
     fun provideDefaultRepository(
-            lunarCrushApi: LunarCrushApi
-    ) = DefaultRepository(lunarCrushApi) as CryptoRepositories
+            lunarCrushApi: LunarCrushApi,
+            coinDatabase: CoinDatabase
+    ) = DefaultRepository(lunarCrushApi,coinDatabase) as CryptoRepositories
 
     @Singleton
     @Provides
