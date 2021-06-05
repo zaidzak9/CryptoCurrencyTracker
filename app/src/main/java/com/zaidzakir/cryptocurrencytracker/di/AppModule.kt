@@ -1,6 +1,7 @@
 package com.zaidzakir.cryptocurrencytracker.di
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.zaidzakir.cryptocurrencytracker.data.local.CoinDatabase
@@ -9,9 +10,11 @@ import com.zaidzakir.cryptocurrencytracker.repositories.remote.CryptoRepositorie
 import com.zaidzakir.cryptocurrencytracker.repositories.remote.DefaultRepository
 import com.zaidzakir.cryptocurrencytracker.util.Constants
 import com.zaidzakir.cryptocurrencytracker.util.Constants.BASE_URL
+import com.zaidzakir.cryptocurrencytracker.util.Constants.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -52,10 +55,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRoomDatabase(application: Application): CoinDatabase {
-       return Room.databaseBuilder(
-                application,
-                CoinDatabase::class.java,
-                Constants.DATABASE_NAME).build()
-    }
+    fun provideShoppingItemDatabase (@ApplicationContext context: Context
+    ) = Room.databaseBuilder(context, CoinDatabase::class.java, DATABASE_NAME).build()
+
 }

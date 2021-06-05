@@ -1,9 +1,10 @@
 package com.zaidzakir.cryptocurrencytracker.data.local
 
 import androidx.room.Database
-import androidx.room.Entity
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
+import com.zaidzakir.cryptocurrencytracker.util.Converters
 
 /**
  *Created by Zaid Zakir
