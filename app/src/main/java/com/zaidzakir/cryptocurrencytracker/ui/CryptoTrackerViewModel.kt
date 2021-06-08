@@ -1,7 +1,6 @@
 package com.zaidzakir.cryptocurrencytracker.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
 import com.zaidzakir.cryptocurrencytracker.repositories.remote.DefaultRepository
@@ -18,34 +17,32 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class CryptoTrackerViewModel @Inject constructor(
-    defaultRepository: DefaultRepository
+        private val defaultRepository: DefaultRepository
 ): ViewModel() {
 
-//    sealed class Events{
-//        class Success(val cryptoResponse: List<CoinData>):Events()
-//        object Failure : Events()
-//        object Loading : Events()
-//        object Empty : Events()
-//    }
+    sealed class Events{
+        class Success(val cryptoResponse: List<CoinData>):Events()
+        object Failure : Events()
+        object Loading : Events()
+        object Empty : Events()
+    }
 
-//    private val _cryptoMarketFlow = MutableStateFlow<Events>(Events.Empty)
-//    val cryptoMarketFlow:StateFlow<Events> =_cryptoMarketFlow
+    private val _cryptoMarketFlow = MutableStateFlow<Events>(Events.Empty)
+    val cryptoMarketFlow:StateFlow<Events> =_cryptoMarketFlow
 
-    val getCryptoMarket = defaultRepository.getCoinDataDao().asLiveData()
-
-//    fun getCryptoMarket() = viewModelScope.launch (Dispatchers.IO){
-//        _cryptoMarketFlow.value = Events.Loading
-//        when(val cryptoResponse = defaultRepository.getCoinsMarket()){
-//            is Resource.Error -> _cryptoMarketFlow.value = Events.Failure()
-//            is Resource.Success -> {
-//                val cryptoResponse = cryptoResponse.data!!.data
-//                if (cryptoResponse == null){
-//                   _cryptoMarketFlow.value = Events.Failure()
-//                }else{
-//                    _cryptoMarketFlow.value = Events.Success(cryptoResponse)
-//                }
-//            }
-//        }
-//    }
+    fun getCryptoMarket() = viewModelScope.launch (Dispatchers.IO){
+        _cryptoMarketFlow.value = Events.Loading
+        when(val cryptoResponse = defaultRepository.getCoinsMarket()){
+            is Resource.Error -> _cryptoMarketFlow.value = Events.Failure
+            is Resource.Success -> {
+                val cryptoResponse = cryptoResponse.data!!.data
+                if (cryptoResponse == null){
+                   _cryptoMarketFlow.value = Events.Failure
+                }else{
+                    _cryptoMarketFlow.value = Events.Success(cryptoResponse)
+                }
+            }
+        }
+    }
 
 }

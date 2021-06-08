@@ -3,7 +3,6 @@ package com.zaidzakir.cryptocurrencytracker.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.zaidzakir.cryptocurrencytracker.data.local.CoinDatabase
 import com.zaidzakir.cryptocurrencytracker.data.remote.LunarCrushApi
 import com.zaidzakir.cryptocurrencytracker.repositories.remote.CryptoRepositories
@@ -50,9 +49,8 @@ object AppModule {
     @Singleton
     @Provides
     fun provideDefaultRepository(
-            lunarCrushApi: LunarCrushApi,
-            coinDatabase: CoinDatabase
-    ) = DefaultRepository(lunarCrushApi,coinDatabase) as CryptoRepositories
+            lunarCrushApi: LunarCrushApi
+    ) = DefaultRepository(lunarCrushApi) as CryptoRepositories
 
     @Singleton
     @Provides
