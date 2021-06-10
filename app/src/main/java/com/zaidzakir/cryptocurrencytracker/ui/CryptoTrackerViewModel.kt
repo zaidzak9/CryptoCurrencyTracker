@@ -1,7 +1,10 @@
 package com.zaidzakir.cryptocurrencytracker.ui
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import androidx.paging.cachedIn
 import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
 import com.zaidzakir.cryptocurrencytracker.repositories.remote.DefaultRepository
 import com.zaidzakir.cryptocurrencytracker.util.Resource
@@ -44,5 +47,7 @@ class CryptoTrackerViewModel @Inject constructor(
             }
         }
     }
+
+    val cryptoResponseFromPaging = defaultRepository.getCoinsMarketPaging().cachedIn(viewModelScope)
 
 }

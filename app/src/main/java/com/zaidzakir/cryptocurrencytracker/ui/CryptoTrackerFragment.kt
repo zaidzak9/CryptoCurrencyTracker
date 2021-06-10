@@ -31,23 +31,36 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 
         recyclerView()
 
-        cryptoViewModel.getCryptoMarket()
+       // getCryptoDataFromStateFlow()
 
+        lifecycleScope.launchWhenStarted {
+            cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
+
+            }
+        }
+
+
+    }
+
+    private fun getCryptoDataFromStateFlow(){
+        cryptoViewModel.getCryptoMarket()
         lifecycleScope.launchWhenStarted {
             cryptoViewModel.cryptoMarketFlow.collect{cryptoResponse ->
                 when(cryptoResponse){
                     is CryptoTrackerViewModel.Events.Success -> {
                         progressBar.isVisible = false
                         cryptoResponse.let {
-                           cryptoInfoAdapter.differ.submitList(it.cryptoResponse)
+                            cryptoInfoAdapter.differ.submitList(it.cryptoResponse)
                         }
                     }
                     is CryptoTrackerViewModel.Events.Failure -> {
                         progressBar.isVisible = false
-                        Snackbar.make(
-                                view,
+                        view?.let {
+                            Snackbar.make(
+                                it,
                                 "Crypto api Failure",
                                 Snackbar.LENGTH_LONG).show()
+                        }
                     }
                     is CryptoTrackerViewModel.Events.Loading -> {
                         progressBar.isVisible = true

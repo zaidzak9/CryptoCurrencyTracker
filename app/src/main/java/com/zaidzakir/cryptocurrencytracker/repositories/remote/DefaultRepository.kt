@@ -1,5 +1,10 @@
 package com.zaidzakir.cryptocurrencytracker.repositories.remote
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
+import androidx.paging.liveData
+import com.zaidzakir.cryptocurrencytracker.data.CryptoPagingSource
 import com.zaidzakir.cryptocurrencytracker.data.remote.LunarCrushApi
 import com.zaidzakir.cryptocurrencytracker.data.remote.response.CrypoMarketMainResponse
 import com.zaidzakir.cryptocurrencytracker.util.Resource
@@ -12,6 +17,16 @@ import javax.inject.Inject
 class DefaultRepository @Inject constructor(
     private val lunarCrushApi: LunarCrushApi
 ):CryptoRepositories {
+
+    fun getCoinsMarketPaging()=
+        Pager(
+            config = PagingConfig(
+                pageSize = 15,
+                maxSize = 100,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {CryptoPagingSource(lunarCrushApi)}
+        ).liveData
 
     override suspend fun getCoinsMarket(): Resource<CrypoMarketMainResponse> {
         return try {
