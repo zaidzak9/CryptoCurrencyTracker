@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoInfoAdapter
+import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoPagingAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.progressBar
@@ -24,18 +25,21 @@ import kotlinx.coroutines.flow.collect
 @AndroidEntryPoint
 class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
     lateinit var cryptoInfoAdapter: LatestCryptoInfoAdapter
+    lateinit var cryptoPagingInfoAdapter: LatestCryptoPagingAdapter
     private val cryptoViewModel:CryptoTrackerViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView()
+        //recyclerView()
 
        // getCryptoDataFromStateFlow()
 
+        recyclerViewPaging()
+
         lifecycleScope.launchWhenStarted {
             cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
-
+                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle,it)
             }
         }
 
@@ -76,6 +80,14 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 
         rvCryptoInfo.apply {
             adapter = cryptoInfoAdapter
+            layoutManager = LinearLayoutManager(activity)
+        }
+    }
+    private fun recyclerViewPaging(){
+        cryptoPagingInfoAdapter = LatestCryptoPagingAdapter()
+
+        rvCryptoInfo.apply {
+            adapter = cryptoPagingInfoAdapter
             layoutManager = LinearLayoutManager(activity)
         }
     }

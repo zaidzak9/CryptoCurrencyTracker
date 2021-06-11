@@ -17,7 +17,7 @@ interface LunarCrushApi {
     suspend fun getCoinsMarket(
             @Query("key") apiKey:String? = BuildConfig.API_KEY,
             @Query("type") type:String? = "fast",
+            @Query("limit") limit :Int? = null,
             @Query("page") page :Int? = null,
-            @Query("per_page") perPage :Int? = null,
     ):Response<CrypoMarketMainResponse>
 }
