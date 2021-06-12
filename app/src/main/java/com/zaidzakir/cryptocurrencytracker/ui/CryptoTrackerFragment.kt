@@ -6,15 +6,13 @@ import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoInfoAdapter
-import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
-import com.zaidzakir.cryptocurrencytracker.util.Resource
+import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoPagingAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.progressBar
@@ -27,60 +25,54 @@ import kotlinx.coroutines.flow.collect
 @AndroidEntryPoint
 class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
     lateinit var cryptoInfoAdapter: LatestCryptoInfoAdapter
+    lateinit var cryptoPagingInfoAdapter: LatestCryptoPagingAdapter
     private val cryptoViewModel:CryptoTrackerViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView()
+        //recyclerView()
 
-//        cryptoViewModel.getCryptoMarket
+       // getCryptoDataFromStateFlow()
 
-        cryptoViewModel.getCryptoMarket.observe(viewLifecycleOwner, Observer {cryptoResponse->
-            when(cryptoResponse){
-                is Resource.Success->{
-                    progressBar.isVisible = false
+        recyclerViewPaging()
+
+        lifecycleScope.launchWhenStarted {
+            cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
+                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle,it)
+            }
+        }
+
+
+    }
+
+    private fun getCryptoDataFromStateFlow(){
+        cryptoViewModel.getCryptoMarket()
+        lifecycleScope.launchWhenStarted {
+            cryptoViewModel.cryptoMarketFlow.collect{cryptoResponse ->
+                when(cryptoResponse){
+                    is CryptoTrackerViewModel.Events.Success -> {
+                        progressBar.isVisible = false
                         cryptoResponse.let {
-                        cryptoInfoAdapter.differ.submitList(cryptoResponse.data)
+                            cryptoInfoAdapter.differ.submitList(it.cryptoResponse)
+                        }
                     }
-                }
-                is Resource.Error->{
-                    progressBar.isVisible = false
-                        Snackbar.make(
-                                view,
+                    is CryptoTrackerViewModel.Events.Failure -> {
+                        progressBar.isVisible = false
+                        view?.let {
+                            Snackbar.make(
+                                it,
                                 "Crypto api Failure",
                                 Snackbar.LENGTH_LONG).show()
-                }
-                is Resource.Loading->{
-                    cryptoInfoAdapter.differ.submitList(cryptoResponse.data)
-                    progressBar.isVisible = true
+                        }
+                    }
+                    is CryptoTrackerViewModel.Events.Loading -> {
+                        progressBar.isVisible = true
+                    }
+                    else -> Unit
                 }
             }
-        })
-
-//        lifecycleScope.launchWhenStarted {
-//            cryptoViewModel.cryptoMarketFlow.collect{cryptoResponse ->
-//                when(cryptoResponse){
-//                    is CryptoTrackerViewModel.Events.Success -> {
-//                        progressBar.isVisible = false
-//                        cryptoResponse.let {
-//                           cryptoInfoAdapter.differ.submitList(it.cryptoResponse)
-//                        }
-//                    }
-//                    is CryptoTrackerViewModel.Events.Failure -> {
-//                        progressBar.isVisible = false
-//                        Snackbar.make(
-//                                view,
-//                                "Crypto api Failure",
-//                                Snackbar.LENGTH_LONG).show()
-//                    }
-//                    is CryptoTrackerViewModel.Events.Loading -> {
-//                        progressBar.isVisible = true
-//                    }
-//                    else -> Unit
-//                }
-//            }
-//        }
+        }
     }
 
     private fun recyclerView(){
@@ -88,6 +80,14 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 
         rvCryptoInfo.apply {
             adapter = cryptoInfoAdapter
+            layoutManager = LinearLayoutManager(activity)
+        }
+    }
+    private fun recyclerViewPaging(){
+        cryptoPagingInfoAdapter = LatestCryptoPagingAdapter()
+
+        rvCryptoInfo.apply {
+            adapter = cryptoPagingInfoAdapter
             layoutManager = LinearLayoutManager(activity)
         }
     }

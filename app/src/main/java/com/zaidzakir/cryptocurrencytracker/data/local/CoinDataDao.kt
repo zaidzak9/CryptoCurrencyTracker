@@ -1,7 +1,7 @@
 package com.zaidzakir.cryptocurrencytracker.data.local
 
 import androidx.room.*
-import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
 import kotlinx.coroutines.flow.Flow
 
 /**
