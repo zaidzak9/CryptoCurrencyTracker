@@ -9,7 +9,6 @@ import retrofit2.http.Query
 
 /**
  *Created by Zaid Zakir
- * test commit
  */
 interface CryptoApi {
 
