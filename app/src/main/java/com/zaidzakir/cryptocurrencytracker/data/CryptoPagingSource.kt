@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.zaidzakir.cryptocurrencytracker.BuildConfig
-import com.zaidzakir.cryptocurrencytracker.data.remote.LunarCrushApi
-import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
+import com.zaidzakir.cryptocurrencytracker.data.remote.CryptoApi
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -14,7 +14,7 @@ import java.io.IOException
  */
 private const val CRYPTO_PAGING_INDEX = 1
 class CryptoPagingSource(
-    private val lunarCrushApi: LunarCrushApi
+    private val lunarCrushApi: CryptoApi
 ): PagingSource<Int, CoinData>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CoinData> {

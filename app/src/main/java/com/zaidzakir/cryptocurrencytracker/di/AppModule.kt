@@ -1,14 +1,14 @@
 package com.zaidzakir.cryptocurrencytracker.di
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.zaidzakir.cryptocurrencytracker.data.local.CoinDatabase
-import com.zaidzakir.cryptocurrencytracker.data.remote.LunarCrushApi
-import com.zaidzakir.cryptocurrencytracker.repositories.remote.CryptoRepositories
+import com.zaidzakir.cryptocurrencytracker.data.remote.CryptoApi
+import com.zaidzakir.cryptocurrencytracker.data.remote.NewsApi
+import com.zaidzakir.cryptocurrencytracker.repositories.remote.MainRepositories
 import com.zaidzakir.cryptocurrencytracker.repositories.remote.DefaultRepository
-import com.zaidzakir.cryptocurrencytracker.util.Constants
-import com.zaidzakir.cryptocurrencytracker.util.Constants.BASE_URL
+import com.zaidzakir.cryptocurrencytracker.util.Constants.BASE_URL_LUNARCRASH_API
+import com.zaidzakir.cryptocurrencytracker.util.Constants.BASE_URL_NEWS_API
 import com.zaidzakir.cryptocurrencytracker.util.Constants.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -31,7 +31,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideCryptoApi(): LunarCrushApi {
+    fun provideCryptoApi(): CryptoApi {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         val okHttpClient = OkHttpClient.Builder()
@@ -39,18 +39,36 @@ object AppModule {
                 .build()
 
         return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(BASE_URL_LUNARCRASH_API)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build()
-                .create(LunarCrushApi::class.java)
+                .create(CryptoApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideNewsApi(): NewsApi {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL_NEWS_API)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+            .create(NewsApi::class.java)
     }
 
     @Singleton
     @Provides
     fun provideDefaultRepository(
-            lunarCrushApi: LunarCrushApi
-    ) = DefaultRepository(lunarCrushApi) as CryptoRepositories
+        lunarCrushApi: CryptoApi,
+        newsApi: NewsApi
+    ) = DefaultRepository(lunarCrushApi,newsApi) as MainRepositories
 
     @Singleton
     @Provides

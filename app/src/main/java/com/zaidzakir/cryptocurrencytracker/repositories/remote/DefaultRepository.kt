@@ -2,11 +2,13 @@ package com.zaidzakir.cryptocurrencytracker.repositories.remote
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingSource
 import androidx.paging.liveData
+import com.zaidzakir.cryptocurrencytracker.BuildConfig
 import com.zaidzakir.cryptocurrencytracker.data.CryptoPagingSource
-import com.zaidzakir.cryptocurrencytracker.data.remote.LunarCrushApi
-import com.zaidzakir.cryptocurrencytracker.data.remote.response.CrypoMarketMainResponse
+import com.zaidzakir.cryptocurrencytracker.data.remote.CryptoApi
+import com.zaidzakir.cryptocurrencytracker.data.remote.NewsApi
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CrypoMarketMainResponse
+import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
 import com.zaidzakir.cryptocurrencytracker.util.Resource
 import java.lang.Exception
 import javax.inject.Inject
@@ -15,8 +17,9 @@ import javax.inject.Inject
  *Created by Zaid Zakir
  */
 class DefaultRepository @Inject constructor(
-    private val lunarCrushApi: LunarCrushApi
-):CryptoRepositories {
+    private val lunarCrushApi: CryptoApi,
+    private val newsApi: NewsApi
+):MainRepositories {
 
     fun getCoinsMarketPaging()=
         Pager(
@@ -35,6 +38,22 @@ class DefaultRepository @Inject constructor(
                 response.body()?.let {cryptoResponse ->
                     return@let Resource.Success(cryptoResponse)
                 }?: Resource.Error("An unknown error occurred")
+            }else{
+                Resource.Error("An unknown error occurred")
+            }
+        }catch (e: Exception){
+            return Resource.Error("Something went wrong! $e")
+        }
+    }
+
+    override suspend fun getNewsApi(): Resource<NewsResponse> {
+        return try {
+            val response = newsApi.searchForNews("crypto currency",BuildConfig.NEWS_API_KEY)
+
+            if (response.isSuccessful){
+                response.body()?.let {
+                    return@let Resource.Success(it)
+                }?:Resource.Error("An unknown error occurred")
             }else{
                 Resource.Error("An unknown error occurred")
             }

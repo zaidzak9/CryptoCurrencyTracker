@@ -3,49 +3,66 @@ package com.zaidzakir.cryptocurrencytracker.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.view.menu.MenuView
 import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.AsyncListUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.zaidzakir.cryptocurrencytracker.R
-import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
-import kotlinx.android.synthetic.main.latest_crypto_info.view.*
+import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
+import kotlinx.android.synthetic.main.news_article_info.view.*
 
 /**
  *Created by Zaid Zakir
  */
-class NewsAdapter {
-//    : RecyclerView.Adapter<NewsAdapter.NewsAdapterViewHolder>()
-//
-//    inner class NewsAdapterViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView)
-//
-//    private val differentCallback = object : DiffUtil.ItemCallback<NewsResponse>(){
-//        override fun areItemsTheSame(oldItem: NewsResponse, newItem: NewsResponse): Boolean {
-//            return oldItem == newItem
-//        }
-//
-//        override fun areContentsTheSame(oldItem: NewsResponse, newItem: NewsResponse): Boolean {
-//            return oldItem == newItem
-//        }
-//    }
-//
-//    val differ = AsyncListDiffer(this,differentCallback)
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsAdapterViewHolder {
-//        return NewsAdapterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.news_article_info,parent,false))
-//    }
-//
-//    override fun onBindViewHolder(holder: NewsAdapterViewHolder, position: Int) {
-//        val newsResponse = differ.currentList[position]
-//        holder.itemView.apply {
-//
-//        }
-//    }
-//
-//    override fun getItemCount(): Int {
-//        return differ.currentList.size
-//    }
+class NewsAdapter : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
 
+    inner class ArticleViewHolder(itemView: View):RecyclerView.ViewHolder(itemView)
 
+    private val differentCallback = object : DiffUtil.ItemCallback<Article>(){
+        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return oldItem.url == newItem.url
+        }
+
+        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    val differ = AsyncListDiffer(this,differentCallback)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
+        return ArticleViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.news_article_info,
+                parent,
+                false
+            )
+        )
+    }
+
+    override fun getItemCount(): Int {
+        return differ.currentList.size
+    }
+
+    override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
+        val article = differ.currentList[position]
+        holder.itemView.apply {
+            Glide.with(this).load(article.urlToImage).into(ivArticleImage)
+            tvSource.text = article.source?.name
+            tvTitle.text = article.title
+            tvDescription.text = article.description
+            tvPublishedAt.text = article.publishedAt
+            setOnClickListener {
+                onItemClickListener?.let {
+                    it(article)
+                }
+            }
+        }
+    }
+
+    private var onItemClickListener:((Article) -> Unit)? = null
+
+    fun setOnItemClickListener(listener:(Article) -> Unit){
+        onItemClickListener = listener
+    }
 }

@@ -6,12 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.zaidzakir.cryptocurrencytracker.R
-import com.zaidzakir.cryptocurrencytracker.data.remote.response.CoinData
-import com.zaidzakir.cryptocurrencytracker.data.remote.response.CrypoMarketMainResponse
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
 import kotlinx.android.synthetic.main.latest_crypto_info.view.*
-import kotlinx.android.synthetic.main.news_article_info.view.*
 
 /**
  *Created by Zaid Zakir

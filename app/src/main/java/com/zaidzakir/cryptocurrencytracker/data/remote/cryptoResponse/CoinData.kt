@@ -1,4 +1,4 @@
-package com.zaidzakir.cryptocurrencytracker.data.remote.response
+package com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,4 +1,4 @@
-package com.zaidzakir.cryptocurrencytracker.data.remote.response
+package com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse
 
 data class CrypoMarketMainResponse(
     val config: Config,
