@@ -22,13 +22,24 @@
     <fragment
         android:id="@+id/newsFragment"
         android:name="com.zaidzakir.cryptocurrencytracker.ui.NewsFragment"
-        android:label="NewsFragment" >
+        android:label="NewsFragment">
         <action
             android:id="@+id/action_newsFragment_to_cryptoTrackerFragment"
             app:destination="@id/cryptoTrackerFragment" />
+        <action
+            android:id="@+id/action_newsFragment_to_articleFragment"
+            app:destination="@id/articleFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.zaidzakir.cryptocurrencytracker.ui.SettingsFragment"
         android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/articleFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.ArticleFragment"
+        android:label="ArticleFragment">
+        <argument
+            android:name="article"
+            app:argType="com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article" />
+    </fragment>
 </navigation>

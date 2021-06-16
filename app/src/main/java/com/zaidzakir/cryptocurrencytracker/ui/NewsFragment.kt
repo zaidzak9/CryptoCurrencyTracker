@@ -33,7 +33,19 @@ class NewsFragment : Fragment(R.layout.fragment_news) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView()
+
+        newsAdapter.setOnItemClickListener {
+            val bundle = Bundle().apply {
+                putSerializable("article", it)
+            }
+            findNavController().navigate(
+                R.id.action_newsFragment_to_articleFragment,
+                bundle
+            )
+        }
         getCryptoDataFromStateFlow()
+
+
     }
 
     private fun getCryptoDataFromStateFlow(){
