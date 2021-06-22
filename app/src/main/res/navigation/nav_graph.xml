@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
-    app:startDestination="@id/newsFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/newsHomeFragment">
 
     <fragment
         android:id="@+id/cryptoTrackerFragment"
         android:name="com.zaidzakir.cryptocurrencytracker.ui.CryptoTrackerFragment"
-        android:label="CryptoTrackerFragment" >
+        android:label="CryptoTrackerFragment">
         <action
             android:id="@+id/action_cryptoTrackerFragment_to_myWalletFragment"
             app:destination="@id/myWalletFragment" />
@@ -42,4 +43,8 @@
             android:name="article"
             app:argType="com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article" />
     </fragment>
+    <fragment
+        android:id="@+id/newsHomeFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.NewsHomeFragment"
+        android:label="NewsHomeFragment" />
 </navigation>
