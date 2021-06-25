@@ -1,13 +1,16 @@
 package com.zaidzakir.cryptocurrencytracker.repositories.remote
 
+import androidx.lifecycle.LiveData
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.liveData
 import com.zaidzakir.cryptocurrencytracker.BuildConfig
 import com.zaidzakir.cryptocurrencytracker.data.CryptoPagingSource
+import com.zaidzakir.cryptocurrencytracker.data.local.NewsDatabase
 import com.zaidzakir.cryptocurrencytracker.data.remote.CryptoApi
 import com.zaidzakir.cryptocurrencytracker.data.remote.NewsApi
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CrypoMarketMainResponse
+import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
 import com.zaidzakir.cryptocurrencytracker.util.Resource
 import java.lang.Exception
@@ -18,7 +21,8 @@ import javax.inject.Inject
  */
 class DefaultRepository @Inject constructor(
     private val lunarCrushApi: CryptoApi,
-    private val newsApi: NewsApi
+    private val newsApi: NewsApi,
+    private val newsDatabase: NewsDatabase
 ):MainRepositories {
 
     fun getCoinsMarketPaging()=
@@ -53,12 +57,22 @@ class DefaultRepository @Inject constructor(
             if (response.isSuccessful){
                 response.body()?.let {
                     return@let Resource.Success(it)
-                }?:Resource.Error("An unknown error occurred")
-            }else{
+                } ?: Resource.Error("An unknown error occurred")
+            } else {
                 Resource.Error("An unknown error occurred")
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return Resource.Error("Something went wrong! $e")
         }
     }
+
+    override suspend fun saveNews(article: Article) {
+        newsDatabase.getNewsDataDao().upsert(article)
+    }
+
+    override fun getSavedNews(): LiveData<List<Article>> {
+        return newsDatabase.getNewsDataDao().getAllArticles()
+    }
+
+
 }

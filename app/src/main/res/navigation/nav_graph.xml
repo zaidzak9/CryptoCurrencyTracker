@@ -42,9 +42,19 @@
         <argument
             android:name="article"
             app:argType="com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article" />
+        <action
+            android:id="@+id/action_articleFragment_to_newsHomeFragment"
+            app:destination="@id/newsHomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/newsHomeFragment"
         android:name="com.zaidzakir.cryptocurrencytracker.ui.NewsHomeFragment"
-        android:label="NewsHomeFragment" />
+        android:label="NewsHomeFragment">
+        <action
+            android:id="@+id/action_newsHomeFragment_to_newsFragment"
+            app:destination="@id/newsFragment" />
+        <action
+            android:id="@+id/action_newsHomeFragment_to_articleFragment"
+            app:destination="@id/articleFragment" />
+    </fragment>
 </navigation>

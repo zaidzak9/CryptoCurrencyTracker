@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
+import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
 import com.zaidzakir.cryptocurrencytracker.repositories.remote.DefaultRepository
 import com.zaidzakir.cryptocurrencytracker.util.Resource
@@ -65,6 +66,13 @@ class CryptoTrackerViewModel @Inject constructor(
             }
         }
     }
+
+    fun saveNews(article: Article) = viewModelScope.launch(Dispatchers.IO) {
+        defaultRepository.saveNews(article)
+    }
+
+    fun getSavedNews() = defaultRepository.getSavedNews()
+
 
     val cryptoResponseFromPaging = defaultRepository.getCoinsMarketPaging().cachedIn(viewModelScope)
 
