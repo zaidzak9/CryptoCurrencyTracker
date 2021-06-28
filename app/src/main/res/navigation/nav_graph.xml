@@ -57,4 +57,12 @@
             android:id="@+id/action_newsHomeFragment_to_articleFragment"
             app:destination="@id/articleFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/savedNewsFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.SavedNewsFragment"
+        android:label="SavedNewsFragment">
+        <action
+            android:id="@+id/action_savedNewsFragment_to_articleFragment"
+            app:destination="@id/articleFragment" />
+    </fragment>
 </navigation>
