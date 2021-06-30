@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_graph"
-    app:startDestination="@id/newsFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/newsHomeFragment">
 
     <fragment
         android:id="@+id/cryptoTrackerFragment"
         android:name="com.zaidzakir.cryptocurrencytracker.ui.CryptoTrackerFragment"
-        android:label="CryptoTrackerFragment" >
+        android:label="CryptoTrackerFragment">
         <action
             android:id="@+id/action_cryptoTrackerFragment_to_myWalletFragment"
             app:destination="@id/myWalletFragment" />
@@ -22,13 +23,46 @@
     <fragment
         android:id="@+id/newsFragment"
         android:name="com.zaidzakir.cryptocurrencytracker.ui.NewsFragment"
-        android:label="NewsFragment" >
+        android:label="NewsFragment">
         <action
             android:id="@+id/action_newsFragment_to_cryptoTrackerFragment"
             app:destination="@id/cryptoTrackerFragment" />
+        <action
+            android:id="@+id/action_newsFragment_to_articleFragment"
+            app:destination="@id/articleFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.zaidzakir.cryptocurrencytracker.ui.SettingsFragment"
         android:label="SettingsFragment" />
+    <fragment
+        android:id="@+id/articleFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.ArticleFragment"
+        android:label="ArticleFragment">
+        <argument
+            android:name="article"
+            app:argType="com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article" />
+        <action
+            android:id="@+id/action_articleFragment_to_newsHomeFragment"
+            app:destination="@id/newsHomeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newsHomeFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.NewsHomeFragment"
+        android:label="NewsHomeFragment">
+        <action
+            android:id="@+id/action_newsHomeFragment_to_newsFragment"
+            app:destination="@id/newsFragment" />
+        <action
+            android:id="@+id/action_newsHomeFragment_to_articleFragment"
+            app:destination="@id/articleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/savedNewsFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.SavedNewsFragment"
+        android:label="SavedNewsFragment">
+        <action
+            android:id="@+id/action_savedNewsFragment_to_articleFragment"
+            app:destination="@id/articleFragment" />
+    </fragment>
 </navigation>
