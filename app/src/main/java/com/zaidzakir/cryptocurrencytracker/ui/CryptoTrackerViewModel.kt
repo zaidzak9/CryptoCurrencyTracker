@@ -76,4 +76,8 @@ class CryptoTrackerViewModel @Inject constructor(
 
     val cryptoResponseFromPaging = defaultRepository.getCoinsMarketPaging().cachedIn(viewModelScope)
 
+    fun deleteArticle(article: Article) = viewModelScope.launch {
+        defaultRepository.deleteArticle(article)
+    }
+
 }

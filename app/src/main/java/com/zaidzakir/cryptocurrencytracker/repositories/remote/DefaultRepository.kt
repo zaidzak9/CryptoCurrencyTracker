@@ -74,5 +74,9 @@ class DefaultRepository @Inject constructor(
         return newsDatabase.getNewsDataDao().getAllArticles()
     }
 
+    override suspend fun deleteArticle(article: Article) {
+        newsDatabase.getNewsDataDao().deleteArticle(article)
+    }
+
 
 }

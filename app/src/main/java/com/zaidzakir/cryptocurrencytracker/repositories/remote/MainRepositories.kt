@@ -14,4 +14,5 @@ interface MainRepositories {
     suspend fun getNewsApi(): Resource<NewsResponse>
     suspend fun saveNews(article: Article)
     fun getSavedNews(): LiveData<List<Article>>
+    suspend fun deleteArticle(article: Article)
 }
