@@ -1,9 +1,12 @@
 package com.zaidzakir.cryptocurrencytracker.ui
 
+import android.util.EventLog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoCoinMetaData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
 import com.zaidzakir.cryptocurrencytracker.repositories.remote.DefaultRepository
@@ -24,8 +27,9 @@ class CryptoTrackerViewModel @Inject constructor(
 ) : ViewModel() {
 
     sealed class Events{
-        class Success(val cryptoResponse: List<CoinData>):Events()
-        class NewsSuccess(val cryptoResponse: Resource<NewsResponse>):Events()
+        class Success(val cryptoResponse: List<CoinData>) : Events()
+        class CryptoMetaSuccess(val cryptoResponse: List<MetaData>) : Events()
+        class NewsSuccess(val cryptoResponse: Resource<NewsResponse>) : Events()
         object Failure : Events()
         object Loading : Events()
         object Empty : Events()
@@ -37,6 +41,7 @@ class CryptoTrackerViewModel @Inject constructor(
     private val _cryptoNewsFlow = MutableStateFlow<Events>(Events.Empty)
     val cryptoNewsFlow: StateFlow<Events> = _cryptoNewsFlow
 
+    //this way loads all data using state flow, instead now im using paging line 97
     fun getCryptoMarket() = viewModelScope.launch(Dispatchers.IO) {
         _cryptoMarketFlow.value = Events.Loading
         when (val cryptoResponse = defaultRepository.getCoinsMarket()) {
@@ -47,6 +52,21 @@ class CryptoTrackerViewModel @Inject constructor(
                     _cryptoMarketFlow.value = Events.Failure
                 } else {
                     _cryptoMarketFlow.value = Events.Success(cryptoResponse)
+                }
+            }
+        }
+    }
+
+    fun getCoinMetaData() = viewModelScope.launch(Dispatchers.IO) {
+        _cryptoMarketFlow.value = Events.Loading
+        when (val cryptoMetaDataResponse = defaultRepository.getCoinMetaData()) {
+            is Resource.Error -> _cryptoMarketFlow.value = Events.Failure
+            is Resource.Success -> {
+                val cryptoMetaResponse = cryptoMetaDataResponse.data?.data
+                if (cryptoMetaResponse == null) {
+                    _cryptoMarketFlow.value = Events.Failure
+                } else {
+                    _cryptoMarketFlow.value = Events.CryptoMetaSuccess(cryptoMetaResponse)
                 }
             }
         }

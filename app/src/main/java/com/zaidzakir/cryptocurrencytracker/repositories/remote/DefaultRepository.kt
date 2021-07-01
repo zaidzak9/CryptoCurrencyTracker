@@ -9,7 +9,8 @@ import com.zaidzakir.cryptocurrencytracker.data.CryptoPagingSource
 import com.zaidzakir.cryptocurrencytracker.data.local.NewsDatabase
 import com.zaidzakir.cryptocurrencytracker.data.remote.CryptoApi
 import com.zaidzakir.cryptocurrencytracker.data.remote.NewsApi
-import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CrypoMarketMainResponse
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoCoinMetaData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoMarketMainResponse
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
 import com.zaidzakir.cryptocurrencytracker.util.Resource
@@ -35,17 +36,17 @@ class DefaultRepository @Inject constructor(
             pagingSourceFactory = {CryptoPagingSource(lunarCrushApi)}
         ).liveData
 
-    override suspend fun getCoinsMarket(): Resource<CrypoMarketMainResponse> {
+    override suspend fun getCoinsMarket(): Resource<CryptoMarketMainResponse> {
         return try {
             val response = lunarCrushApi.getCoinsMarket()
-            if (response.isSuccessful){
-                response.body()?.let {cryptoResponse ->
+            if (response.isSuccessful) {
+                response.body()?.let { cryptoResponse ->
                     return@let Resource.Success(cryptoResponse)
-                }?: Resource.Error("An unknown error occurred")
-            }else{
+                } ?: Resource.Error("An unknown error occurred")
+            } else {
                 Resource.Error("An unknown error occurred")
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return Resource.Error("Something went wrong! $e")
         }
     }
@@ -76,6 +77,22 @@ class DefaultRepository @Inject constructor(
 
     override suspend fun deleteArticle(article: Article) {
         newsDatabase.getNewsDataDao().deleteArticle(article)
+    }
+
+    override suspend fun getCoinMetaData(): Resource<CryptoCoinMetaData> {
+        return try {
+            val response = lunarCrushApi.getCoinsMetaData()
+
+            if (response.isSuccessful) {
+                response.body()?.let { coinMetaData ->
+                    return@let Resource.Success(coinMetaData)
+                } ?: Resource.Error("An unknown error occurred")
+            } else {
+                Resource.Error("An unknown error occurred")
+            }
+        } catch (e: Exception) {
+            return Resource.Error("Something went wrong! $e")
+        }
     }
 
 

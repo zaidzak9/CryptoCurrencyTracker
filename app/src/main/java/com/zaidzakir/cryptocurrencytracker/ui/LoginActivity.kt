@@ -1,6 +1,8 @@
 package com.zaidzakir.cryptocurrencytracker.ui
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -15,13 +17,40 @@ import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
+
+    private val cryptoTrackerViewModel: CryptoTrackerViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
+        loginKeyButton.isEnabled = false
         loginKeyButton.setOnClickListener {
-            val gotoMainActivity = Intent(this,MainActivity::class.java)
+            val gotoMainActivity = Intent(this, MainActivity::class.java)
             startActivity(gotoMainActivity)
+        }
+
+        getCryptoMetaData()
+    }
+
+    private fun getCryptoMetaData() {
+        cryptoTrackerViewModel.getCoinMetaData()
+        lifecycleScope.launchWhenStarted {
+            cryptoTrackerViewModel.cryptoMarketFlow.collect { cryptoMetaResponse ->
+                when (cryptoMetaResponse) {
+                    is CryptoTrackerViewModel.Events.CryptoMetaSuccess -> {
+                        loginKeyButton.isEnabled = true
+                        cryptoMetaResponse?.let {
+                            println("getCryptoMetaData was success")
+                        }
+                    }
+                    is CryptoTrackerViewModel.Events.Failure -> {
+                        loginKeyButton.isEnabled = false
+                        println("getCryptoMetaData was failure")
+                    }
+                    else -> Unit
+                }
+            }
+
         }
     }
 }

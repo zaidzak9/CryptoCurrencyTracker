@@ -46,6 +46,7 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 
     }
 
+    //deprecated
     private fun getCryptoDataFromStateFlow(){
         cryptoViewModel.getCryptoMarket()
         lifecycleScope.launchWhenStarted {
@@ -61,9 +62,9 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
                         progressBar.isVisible = false
                         view?.let {
                             Snackbar.make(
-                                it,
-                                "Crypto api Failure",
-                                Snackbar.LENGTH_LONG).show()
+                                    it,
+                                    "Crypto api Failure",
+                                    Snackbar.LENGTH_LONG).show()
                         }
                     }
                     is CryptoTrackerViewModel.Events.Loading -> {
