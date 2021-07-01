@@ -1,8 +1,11 @@
 package com.zaidzakir.cryptocurrencytracker.ui
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -30,28 +33,49 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+        activity?.title = "Crypto Market"
 
         //recyclerView()
 
-       // getCryptoDataFromStateFlow()
+        // getCryptoDataFromStateFlow()
 
         recyclerViewPaging()
 
         lifecycleScope.launchWhenStarted {
             cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
-                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle,it)
+                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)
             }
         }
 
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_crypto_fragment, menu)
+
+        val searchCrypto = menu.findItem(R.id.cryptoSearch)
+        val searchView = searchCrypto.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+        })
+    }
+
     //deprecated
-    private fun getCryptoDataFromStateFlow(){
+    private fun getCryptoDataFromStateFlow() {
         cryptoViewModel.getCryptoMarket()
         lifecycleScope.launchWhenStarted {
-            cryptoViewModel.cryptoMarketFlow.collect{cryptoResponse ->
-                when(cryptoResponse){
+            cryptoViewModel.cryptoMarketFlow.collect { cryptoResponse ->
+                when (cryptoResponse) {
                     is CryptoTrackerViewModel.Events.Success -> {
                         progressBar.isVisible = false
                         cryptoResponse.let {

@@ -45,9 +45,8 @@ class LatestCryptoPagingAdapter :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val crypto = getItem(position)
-        var cryptoUrl = ""
         holder.itemView.apply {
-            Glide.with(this).load(cryptoUrl).into(ivCryptoImage)
+            Glide.with(this).load(R.drawable.ic_default_crypto).into(ivCryptoImage)
             tvCryptoName.text = crypto?.n
             tvCryptoPrice.text = crypto?.p.toString()
         }
