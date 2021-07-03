@@ -3,6 +3,7 @@ package com.zaidzakir.cryptocurrencytracker.ui
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
@@ -30,23 +31,24 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
     lateinit var cryptoInfoAdapter: LatestCryptoInfoAdapter
     lateinit var cryptoPagingInfoAdapter: LatestCryptoPagingAdapter
     private val cryptoViewModel:CryptoTrackerViewModel by viewModels()
+    private var searchLength =1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         activity?.title = "Crypto Market"
 
-        //recyclerView()
+        recyclerView()
 
-        // getCryptoDataFromStateFlow()
+        getCryptoDataFromStateFlow()
 
-        recyclerViewPaging()
-
-        lifecycleScope.launchWhenStarted {
-            cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
-                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)
-            }
-        }
+        //this uses paging 3 to manage response
+       // recyclerViewPaging()
+//        lifecycleScope.launchWhenStarted {
+//            cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
+//                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)
+//            }
+//        }
 
 
     }
@@ -58,19 +60,36 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         val searchCrypto = menu.findItem(R.id.cryptoSearch)
         val searchView = searchCrypto.actionView as SearchView
 
+        // Define the listener
+        val expandListener = object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                cryptoViewModel.getCryptoMarket()
+                return true
+            }
+
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                return true
+            }
+        }
+        val actionMenuItem = menu?.findItem(R.id.cryptoSearch)
+        actionMenuItem?.setOnActionExpandListener(expandListener)
+
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
+                cryptoInfoAdapter.filter.filter(query)
+                return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                return false
+                cryptoInfoAdapter.filter.filter(newText)
+                return true
             }
 
         })
     }
 
-    //deprecated
+    //using stateflow for filtering function
     private fun getCryptoDataFromStateFlow() {
         cryptoViewModel.getCryptoMarket()
         lifecycleScope.launchWhenStarted {
