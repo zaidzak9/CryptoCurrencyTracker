@@ -5,11 +5,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoCoinMetaData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
+import com.zaidzakir.cryptocurrencytracker.ui.CryptoTrackerViewModel
+import com.zaidzakir.cryptocurrencytracker.util.Constants
 import kotlinx.android.synthetic.main.latest_crypto_info.view.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -21,6 +27,7 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
 
     inner class CryptoViewHolder(itemView: View):RecyclerView.ViewHolder(itemView)
     lateinit var coinFilterList: MutableList<CoinData>
+
 
     private val differentCallback = object : DiffUtil.ItemCallback<CoinData>(){
         override fun areItemsTheSame(oldItem: CoinData, newItem: CoinData): Boolean {
@@ -46,7 +53,7 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
         val crypto = differ.currentList[position]
         coinFilterList = differ.currentList
         holder.itemView.apply {
-            //Glide.with(this).load(crypto.data.get(position)).into(ivCryptoImage)
+            Glide.with(this).load(Constants.cryptoMetaData[position].image).into(ivCryptoImage)
             tvCryptoName.text = crypto.n
             tvCryptoPrice.text = crypto.p.toString()
             setOnClickListener {

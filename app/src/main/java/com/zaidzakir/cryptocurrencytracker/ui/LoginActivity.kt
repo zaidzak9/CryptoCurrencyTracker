@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
@@ -18,7 +20,7 @@ import kotlinx.coroutines.flow.collect
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
-    private val cryptoTrackerViewModel: CryptoTrackerViewModel by viewModels()
+    private val cryptoViewModel: CryptoTrackerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,18 +31,24 @@ class LoginActivity : AppCompatActivity() {
             startActivity(gotoMainActivity)
         }
 
-        //getCryptoMetaData()
+        cryptoViewModel.getSavedCryptoMetaData().observe(this, {
+            if (it.isEmpty()) {
+                getCryptoMetaData()
+            }
+        })
+
     }
 
     private fun getCryptoMetaData() {
-        cryptoTrackerViewModel.getCoinMetaData()
+        cryptoViewModel.getCoinMetaData()
         lifecycleScope.launchWhenStarted {
-            cryptoTrackerViewModel.cryptoMarketFlow.collect { cryptoMetaResponse ->
+            cryptoViewModel.cryptoMarketFlow.collect { cryptoMetaResponse ->
                 when (cryptoMetaResponse) {
                     is CryptoTrackerViewModel.Events.CryptoMetaSuccess -> {
                         loginKeyButton.isEnabled = true
                         cryptoMetaResponse?.let {
                             println("getCryptoMetaData was success")
+                            cryptoViewModel.saveCryptoMetaData(cryptoMetaResponse.cryptoResponse)
                         }
                     }
                     is CryptoTrackerViewModel.Events.Failure -> {

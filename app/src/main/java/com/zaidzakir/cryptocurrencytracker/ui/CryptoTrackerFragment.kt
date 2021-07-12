@@ -17,6 +17,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoInfoAdapter
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoPagingAdapter
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
+import com.zaidzakir.cryptocurrencytracker.util.Constants.cryptoMetaData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.progressBar
@@ -42,8 +44,14 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 
         getCryptoDataFromStateFlow()
 
+        cryptoViewModel.getSavedCryptoMetaData().observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                cryptoMetaData = it
+            }
+        })
+
         //this uses paging 3 to manage response
-       // recyclerViewPaging()
+        // recyclerViewPaging()
 //        lifecycleScope.launchWhenStarted {
 //            cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
 //                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)

@@ -1,11 +1,9 @@
 package com.zaidzakir.cryptocurrencytracker.ui
 
-import android.util.EventLog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
-import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoCoinMetaData
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
@@ -91,8 +89,15 @@ class CryptoTrackerViewModel @Inject constructor(
         defaultRepository.saveNews(article)
     }
 
+    fun saveCryptoMetaData(cryptoCoinMetaData: List<MetaData>) =
+        viewModelScope.launch(Dispatchers.IO) {
+            defaultRepository.saveCoinMetaData(cryptoCoinMetaData)
+        }
+
     fun getSavedNews() = defaultRepository.getSavedNews()
 
+    //to retrieve information about coin
+    fun getSavedCryptoMetaData() = defaultRepository.getSavedCoinMetaData()
 
     val cryptoResponseFromPaging = defaultRepository.getCoinsMarketPaging().cachedIn(viewModelScope)
 

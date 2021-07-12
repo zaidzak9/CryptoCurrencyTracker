@@ -70,14 +70,16 @@ object AppModule {
     fun provideDefaultRepository(
         lunarCrushApi: CryptoApi,
         newsApi: NewsApi,
-        newsDatabase: NewsDatabase
-    ) = DefaultRepository(lunarCrushApi, newsApi, newsDatabase) as MainRepositories
+        newsDatabase: NewsDatabase,
+        coinDatabase: CoinDatabase
+    ) = DefaultRepository(lunarCrushApi, newsApi, newsDatabase, coinDatabase) as MainRepositories
 
     @Singleton
     @Provides
     fun provideCoinDatabase(
         @ApplicationContext context: Context
-    ) = Room.databaseBuilder(context, CoinDatabase::class.java, DATABASE_NAME).build()
+    ) = Room.databaseBuilder(context, CoinDatabase::class.java, DATABASE_NAME)
+        .fallbackToDestructiveMigration().build()
 
     @Singleton
     @Provides
