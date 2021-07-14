@@ -5,22 +5,18 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoInfoAdapter
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoPagingAdapter
-import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
 import com.zaidzakir.cryptocurrencytracker.util.Constants.cryptoMetaData
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.progressBar
 import kotlinx.android.synthetic.main.fragment_cryptotracker.*
 import kotlinx.coroutines.flow.collect
@@ -49,7 +45,6 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
                 cryptoMetaData = it
             }
         })
-
         //this uses paging 3 to manage response
         // recyclerViewPaging()
 //        lifecycleScope.launchWhenStarted {
@@ -57,8 +52,6 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 //                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)
 //            }
 //        }
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
