@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
+import com.zaidzakir.cryptocurrencytracker.util.Constants.cryptoHashData
 import kotlinx.android.synthetic.main.latest_crypto_info.view.*
 import kotlin.collections.ArrayList
 import kotlin.math.roundToLong
@@ -47,8 +48,26 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
     override fun onBindViewHolder(holder: CryptoViewHolder, position: Int) {
         val crypto = differ.currentList[position]
         coinFilterList = differ.currentList
+        var cryptoImage = cryptoHashData[crypto.id]
+        var cryptoTrend = crypto.pch
+
         holder.itemView.apply {
-            Glide.with(this).load(R.drawable.ic_default_crypto).into(ivCryptoImage)
+            Glide.with(this).load(cryptoImage).into(ivCryptoImage)
+            when {
+                cryptoTrend!! > 0.0 -> {
+                    Glide.with(this).load(R.drawable.ic_arrow_up).into(ivCryptoTrend)
+                }
+                cryptoTrend!! < 0.0 -> {
+                    Glide.with(this).load(R.drawable.ic_arrow_down).into(ivCryptoTrend)
+                }
+                else -> {
+                    Glide.with(this).load(R.drawable.ic_dash).into(ivCryptoTrend)
+                }
+            }
+            Glide.with(this).load(cryptoImage).into(ivCryptoImage)
+            Glide.with(this).load(cryptoImage).into(ivCryptoImage)
+            Glide.with(this).load(cryptoImage).into(ivCryptoImage)
+
             tvCryptoName.text = crypto.n
             tvCryptoPrice.text = " USD ${String.format("%.2f", crypto.p)}"
             setOnClickListener {

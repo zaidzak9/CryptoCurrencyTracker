@@ -15,11 +15,13 @@ import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoInfoAdapter
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoPagingAdapter
+import com.zaidzakir.cryptocurrencytracker.util.Constants.cryptoHashData
 import com.zaidzakir.cryptocurrencytracker.util.Constants.cryptoMetaData
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.progressBar
 import kotlinx.android.synthetic.main.fragment_cryptotracker.*
 import kotlinx.coroutines.flow.collect
+import java.util.*
 
 /**
  *Created by Zaid Zakir
@@ -35,16 +37,17 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         activity?.title = "Crypto Market"
-
-        recyclerView()
-
-        getCryptoDataFromStateFlow()
-
         cryptoViewModel.getSavedCryptoMetaData().observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
                 cryptoMetaData = it
+                mapImageWithID()
             }
         })
+
+
+
+        recyclerView()
+        getCryptoDataFromStateFlow()
         //this uses paging 3 to manage response
         // recyclerViewPaging()
 //        lifecycleScope.launchWhenStarted {
@@ -52,6 +55,15 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 //                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)
 //            }
 //        }
+    }
+
+    private fun mapImageWithID() {
+        for (crypto in cryptoMetaData) {
+            if (crypto.id != null && crypto.image != null) {
+                cryptoHashData[crypto.id] = crypto.image
+            }
+        }
+        println("size_of_crypto_meta_hash ${cryptoHashData.size}")
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
