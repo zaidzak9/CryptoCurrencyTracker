@@ -1,5 +1,8 @@
 package com.zaidzakir.cryptocurrencytracker.util
 
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
+import java.util.*
+
 /**
  *Created by Zaid Zakir
  */
@@ -10,4 +13,6 @@ object Constants {
     const val DATABASE_NAME = "crypto_database"
     const val DATABASE_NEWS_NAME = "news_database"
     const val NUM_TABS = 2
+    var cryptoMetaData = listOf<MetaData>()
+    var cryptoHashData = hashMapOf<Int, String>()
 }
