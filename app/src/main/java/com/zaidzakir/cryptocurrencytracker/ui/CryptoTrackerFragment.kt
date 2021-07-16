@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
@@ -44,8 +45,6 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
             }
         })
 
-
-
         recyclerView()
         getCryptoDataFromStateFlow()
         //this uses paging 3 to manage response
@@ -55,6 +54,16 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 //                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)
 //            }
 //        }
+
+        cryptoInfoAdapter.setOnItemClickListener {
+            val bundle = Bundle().apply {
+                putSerializable("CoinData", it)
+            }
+            findNavController().navigate(
+                R.id.action_cryptoTrackerFragment_to_cryptoInfoFragment,
+                bundle
+            )
+        }
     }
 
     private fun mapImageWithID() {
