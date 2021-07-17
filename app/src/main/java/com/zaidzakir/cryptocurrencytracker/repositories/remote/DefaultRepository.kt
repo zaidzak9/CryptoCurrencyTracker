@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.liveData
+import androidx.room.withTransaction
 import com.zaidzakir.cryptocurrencytracker.BuildConfig
 import com.zaidzakir.cryptocurrencytracker.data.CryptoPagingSource
 import com.zaidzakir.cryptocurrencytracker.data.local.CoinDatabase
@@ -15,7 +16,9 @@ import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoMark
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
+import com.zaidzakir.cryptocurrencytracker.util.NetworkBoundResource
 import com.zaidzakir.cryptocurrencytracker.util.Resource
+import kotlinx.coroutines.delay
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -105,6 +108,21 @@ class DefaultRepository @Inject constructor(
     override suspend fun saveCoinMetaData(cryptoCoinMetaData: List<MetaData>) {
         coinDatabase.getCoinDataDao().insertCoinMetaData(cryptoCoinMetaData)
     }
+
+    fun getCoinDataDao() = NetworkBoundResource(
+            query = {
+                coinDatabase.getCoinDataDao().getCoinData()
+            },
+            fetch = {
+                lunarCrushApi.getCoinsMarket()
+            },
+            saveFetchResult = { coinData ->
+                coinDatabase.withTransaction {
+                    coinDatabase.getCoinDataDao().deleteCoinData()
+                    coinDatabase.getCoinDataDao().insertCoinData(coinData.body()!!.data)
+                }
+            }
+    )
 
 
 }

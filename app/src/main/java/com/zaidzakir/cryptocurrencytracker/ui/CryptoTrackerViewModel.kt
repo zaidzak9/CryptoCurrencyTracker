@@ -1,6 +1,7 @@
 package com.zaidzakir.cryptocurrencytracker.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
@@ -39,7 +40,7 @@ class CryptoTrackerViewModel @Inject constructor(
     private val _cryptoNewsFlow = MutableStateFlow<Events>(Events.Empty)
     val cryptoNewsFlow: StateFlow<Events> = _cryptoNewsFlow
 
-    //this way loads all data using state flow, instead now im using paging line 97
+    //this way loads all data using state flow
     fun getCryptoMarket() = viewModelScope.launch(Dispatchers.IO) {
         _cryptoMarketFlow.value = Events.Loading
         when (val cryptoResponse = defaultRepository.getCoinsMarket()) {
@@ -54,6 +55,9 @@ class CryptoTrackerViewModel @Inject constructor(
             }
         }
     }
+
+    //get data using paging
+    val cryptoResponseFromPaging = defaultRepository.getCoinsMarketPaging().cachedIn(viewModelScope)
 
     fun getCoinMetaData() = viewModelScope.launch(Dispatchers.IO) {
         _cryptoMarketFlow.value = Events.Loading
@@ -99,10 +103,11 @@ class CryptoTrackerViewModel @Inject constructor(
     //to retrieve information about coin
     fun getSavedCryptoMetaData() = defaultRepository.getSavedCoinMetaData()
 
-    val cryptoResponseFromPaging = defaultRepository.getCoinsMarketPaging().cachedIn(viewModelScope)
-
     fun deleteArticle(article: Article) = viewModelScope.launch {
         defaultRepository.deleteArticle(article)
     }
+
+    //get data using network bound resource
+    val getCryptoMarket = defaultRepository.getCoinDataDao().asLiveData()
 
 }

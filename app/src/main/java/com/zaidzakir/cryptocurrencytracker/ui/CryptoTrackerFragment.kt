@@ -18,6 +18,7 @@ import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoInfoAdapter
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoPagingAdapter
 import com.zaidzakir.cryptocurrencytracker.util.Constants.cryptoHashData
 import com.zaidzakir.cryptocurrencytracker.util.Constants.cryptoMetaData
+import com.zaidzakir.cryptocurrencytracker.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.progressBar
 import kotlinx.android.synthetic.main.fragment_cryptotracker.*
@@ -46,7 +47,10 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         })
 
         recyclerView()
-        getCryptoDataFromStateFlow()
+        //getCryptoDataFromStateFlow()
+        getCryptoLiveDataUsingNetworkBoundResource()
+
+
         //this uses paging 3 to manage response
         // recyclerViewPaging()
 //        lifecycleScope.launchWhenStarted {
@@ -85,7 +89,7 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         // Define the listener
         val expandListener = object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                cryptoViewModel.getCryptoMarket()
+                cryptoViewModel.getCryptoMarket
                 return true
             }
 
@@ -141,7 +145,39 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         }
     }
 
-    private fun recyclerView(){
+    private fun getCryptoLiveDataUsingNetworkBoundResource() {
+        cryptoViewModel.getCryptoMarket.observe(viewLifecycleOwner, { cryptoResponse ->
+            when (cryptoResponse) {
+                is Resource.Success -> {
+                    progressBar.isVisible = false
+                    cryptoResponse.let {
+                        cryptoInfoAdapter.differ.submitList(cryptoResponse.data)
+                    }
+                }
+                is Resource.Error -> {
+                    progressBar.isVisible = false
+                    view?.let {
+                        Snackbar.make(
+                                it,
+                                "Crypto api Failure",
+                                Snackbar.LENGTH_LONG).show()
+                    }
+                }
+                is Resource.Loading -> {
+                    if (cryptoResponse.data?.size == 0) {
+                        cryptoViewModel.getCryptoMarket
+                    } else {
+                        cryptoInfoAdapter.differ.submitList(cryptoResponse.data)
+                    }
+
+                    //progressBar.isVisible = true
+                }
+            }
+        }
+        )
+    }
+
+    private fun recyclerView() {
         cryptoInfoAdapter = LatestCryptoInfoAdapter()
 
         rvCryptoInfo.apply {
@@ -149,7 +185,8 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
             layoutManager = LinearLayoutManager(activity)
         }
     }
-    private fun recyclerViewPaging(){
+
+    private fun recyclerViewPaging() {
         cryptoPagingInfoAdapter = LatestCryptoPagingAdapter()
 
         rvCryptoInfo.apply {

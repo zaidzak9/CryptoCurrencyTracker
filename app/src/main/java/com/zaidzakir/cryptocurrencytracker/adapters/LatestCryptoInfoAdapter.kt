@@ -51,7 +51,6 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
         coinFilterList = differ.currentList
         var cryptoImage = cryptoHashData[crypto.id]
         var cryptoTrend = crypto.pch
-
         holder.itemView.apply {
             Glide.with(this).load(cryptoImage).into(ivCryptoImage)
             tvValueChange.text = "(${cryptoTrend.toString()})"
@@ -111,8 +110,11 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 println("filter publishResults: ${results?.values}")
+                if (results?.values != null) {
                     coinFilterList = results?.values as MutableList<CoinData>
                     differ.submitList(coinFilterList)
+                }
+
             }
 
         }

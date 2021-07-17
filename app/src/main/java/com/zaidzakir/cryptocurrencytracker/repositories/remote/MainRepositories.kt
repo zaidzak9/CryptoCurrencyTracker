@@ -1,6 +1,7 @@
 package com.zaidzakir.cryptocurrencytracker.repositories.remote
 
 import androidx.lifecycle.LiveData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoCoinMetaData
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoMarketMainResponse
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
