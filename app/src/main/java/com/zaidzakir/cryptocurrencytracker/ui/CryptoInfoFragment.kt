@@ -7,11 +7,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_crypto_info.*
-import kotlinx.android.synthetic.main.latest_crypto_info.view.*
+import java.text.NumberFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  *Created by Zaid Zakir
@@ -24,13 +29,19 @@ class CryptoInfoFragment : Fragment(R.layout.fragment_crypto_info) {
         super.onViewCreated(view, savedInstanceState)
 
         val coinData = cryptoInfoFragmentArgs.CoinData
+        val format: NumberFormat = NumberFormat.getCurrencyInstance()
+        format.maximumFractionDigits = 0
+        format.currency = Currency.getInstance("USD")
+
+
 
         coinData?.let {
             tvCryptoName.text = it.n
             tvcryptoSymbol.text = it.s
             Glide.with(this).load(Constants.cryptoHashData[it.id]).into(ivCryptoImage)
-            tvCryptoPrice.text = "USD ${it.p.toString()}"
-            tvCryptoMarket.text = "Market Value : USD ${it.mc.toString()}"
+            tvCryptoPrice.text = "${format.format(it.p)}"
+            tvCryptoMarket.text = "Market : ${format.format(it.mc)}"
+            println("Market : USD ${format.format(it.mc)}")
 
             when {
                 it.pch!! > 0.0 -> {
@@ -49,6 +60,20 @@ class CryptoInfoFragment : Fragment(R.layout.fragment_crypto_info) {
             }
             tvValueChange.text = it.pch.toString()
         }
+
+        val entries = ArrayList<Entry>()
+        entries.add(Entry(1f, 0f))
+        entries.add(Entry(2f, 1f))
+        entries.add(Entry(3f, 2f))
+        entries.add(Entry(4f, 3f))
+        entries.add(Entry(5f, 4f))
+        entries.add(Entry(6f, 5f))
+
+        val lineDataSet = LineDataSet(entries, "test")
+        val data = LineData(lineDataSet)
+        cryptoChart.data = data
+        cryptoChart.setBackgroundColor(Color.WHITE)
+        cryptoChart.animateY(500)
 
 
     }
