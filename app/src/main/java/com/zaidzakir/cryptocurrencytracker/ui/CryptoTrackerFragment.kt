@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -32,13 +33,14 @@ import java.util.*
 class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
     lateinit var cryptoInfoAdapter: LatestCryptoInfoAdapter
     lateinit var cryptoPagingInfoAdapter: LatestCryptoPagingAdapter
-    private val cryptoViewModel:CryptoTrackerViewModel by viewModels()
-    private var searchLength =1
+    private val cryptoViewModel: CryptoTrackerViewModel by viewModels()
+    private var searchLength = 1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         activity?.title = "Crypto Market"
+        spinnerInitialization()
         cryptoViewModel.getSavedCryptoMetaData().observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
                 cryptoMetaData = it
@@ -49,16 +51,8 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         recyclerView()
         //getCryptoDataFromStateFlow()
         getCryptoLiveDataUsingNetworkBoundResource()
-
-
         //this uses paging 3 to manage response
-        // recyclerViewPaging()
-//        lifecycleScope.launchWhenStarted {
-//            cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
-//                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)
-//            }
-//        }
-
+        //getCryptoDataUsingPaging3()
         cryptoInfoAdapter.setOnItemClickListener {
             val bundle = Bundle().apply {
                 putSerializable("CoinData", it)
@@ -115,6 +109,40 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         })
     }
 
+    private fun spinnerInitialization() {
+        ArrayAdapter.createFromResource(
+            context!!,
+            R.array.spinner_time_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            spinnerTime.adapter = adapter
+        }
+
+        ArrayAdapter.createFromResource(
+            context!!,
+            R.array.spinner_other_array,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            // Specify the layout to use when the list of choices appears
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            // Apply the adapter to the spinner
+            spinnerOther.adapter = adapter
+        }
+
+    }
+
+    private fun getCryptoDataUsingPaging3() {
+        recyclerViewPaging()
+        lifecycleScope.launchWhenStarted {
+            cryptoViewModel.cryptoResponseFromPaging.observe(viewLifecycleOwner) {
+                cryptoPagingInfoAdapter.submitData(viewLifecycleOwner.lifecycle, it)
+            }
+        }
+    }
+
     //using stateflow for filtering function
     private fun getCryptoDataFromStateFlow() {
         cryptoViewModel.getCryptoMarket()
@@ -131,9 +159,10 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
                         progressBar.isVisible = false
                         view?.let {
                             Snackbar.make(
-                                    it,
-                                    "Crypto api Failure",
-                                    Snackbar.LENGTH_LONG).show()
+                                it,
+                                "Crypto api Failure",
+                                Snackbar.LENGTH_LONG
+                            ).show()
                         }
                     }
                     is CryptoTrackerViewModel.Events.Loading -> {
@@ -158,9 +187,10 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
                     progressBar.isVisible = false
                     view?.let {
                         Snackbar.make(
-                                it,
-                                "Crypto api Failure",
-                                Snackbar.LENGTH_LONG).show()
+                            it,
+                            "Crypto api Failure",
+                            Snackbar.LENGTH_LONG
+                        ).show()
                     }
                 }
                 is Resource.Loading -> {
