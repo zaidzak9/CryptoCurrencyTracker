@@ -44,7 +44,7 @@ class DefaultRepository @Inject constructor(
 
     override suspend fun getCoinsMarket(): Resource<CryptoMarketMainResponse> {
         return try {
-            val response = lunarCrushApi.getCoinsMarket()
+            val response = lunarCrushApi.getCoinsMarket(sort = "p", order = true)
             if (response.isSuccessful) {
                 response.body()?.let { cryptoResponse ->
                     return@let Resource.Success(cryptoResponse)
@@ -109,12 +109,12 @@ class DefaultRepository @Inject constructor(
         coinDatabase.getCoinDataDao().insertCoinMetaData(cryptoCoinMetaData)
     }
 
-    fun getCoinDataDao() = NetworkBoundResource(
+    fun getCoinDataNBR(sort: String, order: Boolean) = NetworkBoundResource(
             query = {
                 coinDatabase.getCoinDataDao().getCoinData()
             },
             fetch = {
-                lunarCrushApi.getCoinsMarket()
+                lunarCrushApi.getCoinsMarket(sort = sort, order = order)
             },
             saveFetchResult = { coinData ->
                 coinDatabase.withTransaction {

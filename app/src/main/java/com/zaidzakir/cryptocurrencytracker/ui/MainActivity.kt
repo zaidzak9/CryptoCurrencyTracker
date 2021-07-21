@@ -27,5 +27,6 @@ class MainActivity : AppCompatActivity() {
         bottomNavigationView.setupWithNavController(navHostFragment.findNavController())
         bottomNavigationView.labelVisibilityMode = LABEL_VISIBILITY_LABELED
 
+
     }
 }

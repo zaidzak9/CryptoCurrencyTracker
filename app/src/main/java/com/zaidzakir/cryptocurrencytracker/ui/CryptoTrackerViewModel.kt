@@ -108,6 +108,6 @@ class CryptoTrackerViewModel @Inject constructor(
     }
 
     //get data using network bound resource
-    val getCryptoMarket = defaultRepository.getCoinDataDao().asLiveData()
+    fun getCryptoMarketNBR(sort: String, order: Boolean) = defaultRepository.getCoinDataNBR(sort, order).asLiveData()
 
 }

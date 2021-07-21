@@ -21,16 +21,17 @@ class CryptoPagingSource(
         //to trigger api request and turn data into pages
         val position = params.key ?:CRYPTO_PAGING_INDEX
         return try {
-            val response = lunarCrushApi.getCoinsMarket(BuildConfig.API_KEY,"fast",params.loadSize,position)
+            val response = lunarCrushApi.getCoinsMarket(sort = "p", order = true)
+//            val response = lunarCrushApi.getCoinsMarket(BuildConfig.API_KEY,"fast",params.loadSize,position)
             val cryptoData = response.body()
             if (response.isSuccessful) {
                 LoadResult.Page(
-                    data = cryptoData!!.data,
-                    prevKey = if (position == CRYPTO_PAGING_INDEX) null else position - 1,
-                    nextKey = if (cryptoData.data.isEmpty()) null else position + 1
+                        data = cryptoData!!.data,
+                        prevKey = if (position == CRYPTO_PAGING_INDEX) null else position - 1,
+                        nextKey = if (cryptoData.data.isEmpty()) null else position + 1
                 )
-            }else{
-                Log.d("paging error : ","Something went wrong")
+            } else {
+                Log.d("paging error : ", "Something went wrong")
                 val throwable = Throwable("error")
                 LoadResult.Error(throwable)
             }

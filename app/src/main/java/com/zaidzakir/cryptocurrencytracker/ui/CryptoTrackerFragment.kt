@@ -5,8 +5,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -35,6 +37,9 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
     lateinit var cryptoPagingInfoAdapter: LatestCryptoPagingAdapter
     private val cryptoViewModel: CryptoTrackerViewModel by viewModels()
     private var searchLength = 1
+    private var sort = "p"
+    private var order = true
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,7 +55,7 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 
         recyclerView()
         //getCryptoDataFromStateFlow()
-        getCryptoLiveDataUsingNetworkBoundResource()
+        getCryptoLiveDataUsingNetworkBoundResource("p", true)
         //this uses paging 3 to manage response
         //getCryptoDataUsingPaging3()
         cryptoInfoAdapter.setOnItemClickListener {
@@ -83,7 +88,7 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         // Define the listener
         val expandListener = object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
-                cryptoViewModel.getCryptoMarket
+                cryptoViewModel.getCryptoMarketNBR("p", true)
                 return true
             }
 
@@ -122,9 +127,9 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         }
 
         ArrayAdapter.createFromResource(
-            context!!,
-            R.array.spinner_other_array,
-            android.R.layout.simple_spinner_item
+                context!!,
+                R.array.spinner_other_array,
+                android.R.layout.simple_spinner_item
         ).also { adapter ->
             // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -132,6 +137,28 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
             spinnerOther.adapter = adapter
         }
 
+        spinnerTime.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                when (parent?.getItemAtPosition(position) as String) {
+                    "Low to High" -> order = true
+                    "High to Low" -> order = false
+                }
+                filterCryptoSearch(sort, order)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
+
+        spinnerOther.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                sort = parent?.getItemAtPosition(position) as String
+                filterCryptoSearch(sort, order)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
     }
 
     private fun getCryptoDataUsingPaging3() {
@@ -159,9 +186,9 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
                         progressBar.isVisible = false
                         view?.let {
                             Snackbar.make(
-                                it,
-                                "Crypto api Failure",
-                                Snackbar.LENGTH_LONG
+                                    it,
+                                    "Crypto api Failure",
+                                    Snackbar.LENGTH_LONG
                             ).show()
                         }
                     }
@@ -174,8 +201,8 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         }
     }
 
-    private fun getCryptoLiveDataUsingNetworkBoundResource() {
-        cryptoViewModel.getCryptoMarket.observe(viewLifecycleOwner, { cryptoResponse ->
+    private fun getCryptoLiveDataUsingNetworkBoundResource(sort: String, order: Boolean) {
+        cryptoViewModel.getCryptoMarketNBR(sort, order).observe(viewLifecycleOwner, { cryptoResponse ->
             when (cryptoResponse) {
                 is Resource.Success -> {
                     progressBar.isVisible = false
@@ -187,15 +214,15 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
                     progressBar.isVisible = false
                     view?.let {
                         Snackbar.make(
-                            it,
-                            "Crypto api Failure",
-                            Snackbar.LENGTH_LONG
+                                it,
+                                "Crypto api Failure",
+                                Snackbar.LENGTH_LONG
                         ).show()
                     }
                 }
                 is Resource.Loading -> {
                     if (cryptoResponse.data?.size == 0) {
-                        cryptoViewModel.getCryptoMarket
+                        cryptoViewModel.getCryptoMarketNBR(sort, order)
                     } else {
                         cryptoInfoAdapter.differ.submitList(cryptoResponse.data)
                     }
@@ -224,4 +251,9 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
             layoutManager = LinearLayoutManager(activity)
         }
     }
+
+    fun filterCryptoSearch(sort: String, order: Boolean) {
+        cryptoViewModel.getCryptoMarketNBR(sort, order)
+    }
+
 }
