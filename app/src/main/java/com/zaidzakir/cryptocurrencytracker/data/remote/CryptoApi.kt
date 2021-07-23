@@ -15,8 +15,8 @@ interface CryptoApi {
     @GET("v2?data=market")
     suspend fun getCoinsMarket(
             @Query("key") apiKey: String = BuildConfig.API_KEY,
-            @Query("sort") sort: String? = "p",
-            @Query("desc") order: Boolean? = true,
+            @Query("sort") sort: String,
+            @Query("desc") order: Boolean,
             @Query("limit") limit: Int? = 100,
             @Query("type") type: String = "fast",
     ): Response<CryptoMarketMainResponse>

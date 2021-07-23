@@ -13,7 +13,7 @@ import com.zaidzakir.cryptocurrencytracker.util.Resource
  *Created by Zaid Zakir
  */
 interface MainRepositories {
-    suspend fun getCoinsMarket(): Resource<CryptoMarketMainResponse>
+    suspend fun getCoinsMarket(sort: String, order: Boolean): Resource<CryptoMarketMainResponse>
     suspend fun getNewsApi(): Resource<NewsResponse>
     suspend fun saveNews(article: Article)
     fun getSavedNews(): LiveData<List<Article>>

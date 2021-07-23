@@ -41,9 +41,9 @@ class CryptoTrackerViewModel @Inject constructor(
     val cryptoNewsFlow: StateFlow<Events> = _cryptoNewsFlow
 
     //this way loads all data using state flow
-    fun getCryptoMarket() = viewModelScope.launch(Dispatchers.IO) {
+    fun getCryptoMarket(sort: String, order: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         _cryptoMarketFlow.value = Events.Loading
-        when (val cryptoResponse = defaultRepository.getCoinsMarket()) {
+        when (val cryptoResponse = defaultRepository.getCoinsMarket(sort, order)) {
             is Resource.Error -> _cryptoMarketFlow.value = Events.Failure
             is Resource.Success -> {
                 val cryptoResponse = cryptoResponse.data!!.data

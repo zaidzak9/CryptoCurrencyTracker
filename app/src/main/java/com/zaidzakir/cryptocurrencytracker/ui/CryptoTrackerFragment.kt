@@ -54,8 +54,8 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         })
 
         recyclerView()
-        //getCryptoDataFromStateFlow()
-        getCryptoLiveDataUsingNetworkBoundResource("p", true)
+        getCryptoDataFromStateFlow("acr", true)
+        //getCryptoLiveDataUsingNetworkBoundResource("p", true)
         //this uses paging 3 to manage response
         //getCryptoDataUsingPaging3()
         cryptoInfoAdapter.setOnItemClickListener {
@@ -63,8 +63,8 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
                 putSerializable("CoinData", it)
             }
             findNavController().navigate(
-                R.id.action_cryptoTrackerFragment_to_cryptoInfoFragment,
-                bundle
+                    R.id.action_cryptoTrackerFragment_to_cryptoInfoFragment,
+                    bundle
             )
         }
     }
@@ -140,10 +140,12 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         spinnerTime.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 when (parent?.getItemAtPosition(position) as String) {
-                    "Low to High" -> order = true
-                    "High to Low" -> order = false
+                    "Low to High" -> order = false
+                    "High to Low" -> order = true
                 }
-                filterCryptoSearch(sort, order)
+                if (parent?.getItemAtPosition(position) != "Sort Order") {
+                    getCryptoDataFromStateFlow(sort, order)
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -153,7 +155,16 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         spinnerOther.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 sort = parent?.getItemAtPosition(position) as String
-                filterCryptoSearch(sort, order)
+                when (sort) {
+                    "Price" -> sort = "p"
+                    "Percent Change (24 Hours)" -> sort = "pc"
+                    "Percent Change (1 Hours)" -> sort = "pch"
+                    "Rank" -> sort = "acr"
+                    "Market Cap" -> sort = "mc"
+                }
+                if (!sort.contentEquals("Sort by Value")) {
+                    getCryptoDataFromStateFlow(sort, order)
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -171,8 +182,8 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
     }
 
     //using stateflow for filtering function
-    private fun getCryptoDataFromStateFlow() {
-        cryptoViewModel.getCryptoMarket()
+    private fun getCryptoDataFromStateFlow(sort: String, order: Boolean) {
+        cryptoViewModel.getCryptoMarket(sort, order)
         lifecycleScope.launchWhenStarted {
             cryptoViewModel.cryptoMarketFlow.collect { cryptoResponse ->
                 when (cryptoResponse) {
@@ -250,10 +261,6 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
             adapter = cryptoPagingInfoAdapter
             layoutManager = LinearLayoutManager(activity)
         }
-    }
-
-    fun filterCryptoSearch(sort: String, order: Boolean) {
-        cryptoViewModel.getCryptoMarketNBR(sort, order)
     }
 
 }

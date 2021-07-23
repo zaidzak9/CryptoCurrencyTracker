@@ -42,9 +42,9 @@ class DefaultRepository @Inject constructor(
             pagingSourceFactory = {CryptoPagingSource(lunarCrushApi)}
         ).liveData
 
-    override suspend fun getCoinsMarket(): Resource<CryptoMarketMainResponse> {
+    override suspend fun getCoinsMarket(sort: String, order: Boolean): Resource<CryptoMarketMainResponse> {
         return try {
-            val response = lunarCrushApi.getCoinsMarket(sort = "p", order = true)
+            val response = lunarCrushApi.getCoinsMarket(sort = sort, order = order)
             if (response.isSuccessful) {
                 response.body()?.let { cryptoResponse ->
                     return@let Resource.Success(cryptoResponse)
