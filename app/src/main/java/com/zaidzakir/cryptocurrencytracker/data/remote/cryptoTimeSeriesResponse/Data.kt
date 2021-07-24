@@ -1,0 +1,33 @@
+package com.zaidzakir.cryptocurrencytracker.data.remote.cryptoTimeSeriesResponse
+
+data class Data(
+        val alt_rank_3m: Int,
+        val asset_id: Int,
+        val close: Double,
+        val close_3m: Double,
+        val close_3m_percent_change: Double,
+        val close_3m_previous: Double,
+        val data_points_3m: Int,
+        val galaxy_score_3m: Int,
+        val high: Double,
+        val id: Int,
+        val low: Double,
+        val market_cap: Long,
+        val market_cap_3m: Long,
+        val market_cap_3m_previous: Long,
+        val max_supply: String,
+        val name: String,
+        val `open`: Double,
+        val percent_change_24h: Double,
+        val percent_change_30d: Double,
+        val percent_change_7d: Double,
+        val price: Double,
+        val price_btc: Double,
+        val symbol: String,
+        val time: Int,
+        val timeSeries: List<TimeSeries>,
+        val volatility_3m: Double,
+        val volatility_3m_previous: Double,
+        val volume: Double,
+        val volume_24h: Double
+)
