@@ -16,8 +16,8 @@ object Constants {
     const val COIN_LIMIT = 100
     const val INTERVAL = "day"
     const val TYPE = "fast"
-    const val CHANGE = "3m"
-    const val DATA_POINTS = 90
+    const val CHANGE = "1m"
+    const val DATA_POINTS = 10
     const val TIME_SERIES_VALUES = "time,open,close"
     var cryptoMetaData = listOf<MetaData>()
     var cryptoHashData = hashMapOf<Int, String>()

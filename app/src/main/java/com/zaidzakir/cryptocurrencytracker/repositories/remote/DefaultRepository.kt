@@ -14,6 +14,7 @@ import com.zaidzakir.cryptocurrencytracker.data.remote.NewsApi
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoCoinMetaData
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoMarketMainResponse
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoTimeSeriesResponse.CryptoTimeSeriesMain
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
 import com.zaidzakir.cryptocurrencytracker.util.NetworkBoundResource
@@ -107,6 +108,22 @@ class DefaultRepository @Inject constructor(
 
     override suspend fun saveCoinMetaData(cryptoCoinMetaData: List<MetaData>) {
         coinDatabase.getCoinDataDao().insertCoinMetaData(cryptoCoinMetaData)
+    }
+
+    override suspend fun getCoinTimeSeries(symbol: String): Resource<CryptoTimeSeriesMain> {
+        return try {
+            val response = lunarCrushApi.getCoinTimeSeries(symbol = symbol)
+
+            if (response.isSuccessful) {
+                response.body()?.let { cryptoTimeSeriesMain ->
+                    return@let Resource.Success(cryptoTimeSeriesMain)
+                } ?: Resource.Error("An unknown error occurred")
+            } else {
+                Resource.Error("An unknown error occurred")
+            }
+        } catch (e: Exception) {
+            return Resource.Error("Something went wrong! $e")
+        }
     }
 
     fun getCoinDataNBR(sort: String, order: Boolean) = NetworkBoundResource(

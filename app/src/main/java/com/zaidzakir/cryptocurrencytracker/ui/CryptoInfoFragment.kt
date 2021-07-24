@@ -3,18 +3,23 @@ package com.zaidzakir.cryptocurrencytracker.ui
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_crypto_info.*
+import kotlinx.coroutines.flow.collect
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -61,20 +66,62 @@ class CryptoInfoFragment : Fragment(R.layout.fragment_crypto_info) {
             tvValueChange.text = it.pch.toString()
         }
 
-        val entries = ArrayList<Entry>()
-        entries.add(Entry(1f, 0f))
-        entries.add(Entry(2f, 1f))
-        entries.add(Entry(3f, 2f))
-        entries.add(Entry(4f, 3f))
-        entries.add(Entry(5f, 4f))
-        entries.add(Entry(6f, 5f))
+        getCryptoTimeSeries()
+    }
 
-        val lineDataSet = LineDataSet(entries, "test")
+    private fun getCryptoTimeSeries() {
+        cryptoTrackerViewModel.getCryptoTimeSeries(tvcryptoSymbol.text.toString())
+        lifecycleScope.launchWhenResumed {
+            cryptoTrackerViewModel.cryptoTimeSeriesFlow.collect { cryptoTimeSeries ->
+                when (cryptoTimeSeries) {
+                    is CryptoTrackerViewModel.Events.CryptoTimeSeriesSuccess -> {
+                        progressBarCryptoInfo.isVisible = false
+                        val entries = ArrayList<Entry>()
+                        for (timeArray in cryptoTimeSeries.cryptoTimeSeriesResponse) {
+                            for (time in timeArray.timeSeries) {
+                                var price = "%.2f".format(time.close)
+                                var time = getDateTime(time.time.toFloat())
+                                println("Time_Series : Price - $price | Time - $time")
+                                entries.add(Entry(time!!.toFloat(), price.toFloat()))
+                            }
+                        }
+
+                        drawChart(entries)
+                    }
+                    is CryptoTrackerViewModel.Events.Failure -> {
+                        progressBarCryptoInfo.isVisible = false
+                        view?.let { view ->
+                            Snackbar.make(
+                                    view,
+                                    "getCryptoTimeSeries api Failure",
+                                    Snackbar.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                    is CryptoTrackerViewModel.Events.Loading -> {
+                        progressBarCryptoInfo.isVisible = true
+                    }
+                    else -> Unit
+                }
+            }
+        }
+    }
+
+    private fun drawChart(entries: ArrayList<Entry>) {
+        val lineDataSet = LineDataSet(entries, tvcryptoSymbol.text.toString())
         val data = LineData(lineDataSet)
         cryptoChart.data = data
         cryptoChart.setBackgroundColor(Color.WHITE)
         cryptoChart.animateY(500)
+    }
 
-
+    private fun getDateTime(s: Float): String? {
+        return try {
+            val sdf = SimpleDateFormat("dd.MM")
+            val netDate = Date(s.toLong() * 1000)
+            sdf.format(netDate)
+        } catch (e: Exception) {
+            e.toString()
+        }
     }
 }

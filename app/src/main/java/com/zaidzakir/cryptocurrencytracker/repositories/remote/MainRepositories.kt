@@ -5,6 +5,7 @@ import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoCoinMetaData
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoMarketMainResponse
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoTimeSeriesResponse.CryptoTimeSeriesMain
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
 import com.zaidzakir.cryptocurrencytracker.util.Resource
@@ -21,4 +22,5 @@ interface MainRepositories {
     suspend fun getCoinMetaData(): Resource<CryptoCoinMetaData>
     fun getSavedCoinMetaData(): LiveData<List<MetaData>>
     suspend fun saveCoinMetaData(cryptoCoinMetaData: List<MetaData>)
+    suspend fun getCoinTimeSeries(symbol: String): Resource<CryptoTimeSeriesMain>
 }
