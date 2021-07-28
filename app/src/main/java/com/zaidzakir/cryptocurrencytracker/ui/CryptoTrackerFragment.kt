@@ -8,13 +8,13 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.google.android.material.snackbar.Snackbar
 import com.zaidzakir.cryptocurrencytracker.R
 import com.zaidzakir.cryptocurrencytracker.adapters.LatestCryptoInfoAdapter
@@ -27,6 +27,9 @@ import kotlinx.android.synthetic.main.activity_main.progressBar
 import kotlinx.android.synthetic.main.fragment_cryptotracker.*
 import kotlinx.coroutines.flow.collect
 import java.util.*
+import kotlin.collections.isNotEmpty
+import kotlin.collections.set
+
 
 /**
  *Created by Zaid Zakir
@@ -116,9 +119,9 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
 
     private fun spinnerInitialization() {
         ArrayAdapter.createFromResource(
-            context!!,
-            R.array.spinner_time_array,
-            android.R.layout.simple_spinner_item
+                context!!,
+                R.array.spinner_time_array,
+                android.R.layout.simple_spinner_item
         ).also { adapter ->
             // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -140,11 +143,17 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
         spinnerTime.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 when (parent?.getItemAtPosition(position) as String) {
-                    "Low to High" -> order = false
+                    "Low to High" -> order == null
                     "High to Low" -> order = true
                 }
                 if (parent?.getItemAtPosition(position) != "Sort Order") {
                     getCryptoDataFromStateFlow(sort, order)
+                    cryptoInfoAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
+                        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                            super.onItemRangeInserted(positionStart, itemCount)
+                            rvCryptoInfo.smoothScrollToPosition(0)
+                        }
+                    })
                 }
             }
 
@@ -164,6 +173,12 @@ class CryptoTrackerFragment : Fragment(R.layout.fragment_cryptotracker) {
                 }
                 if (!sort.contentEquals("Sort by Value")) {
                     getCryptoDataFromStateFlow(sort, order)
+                    cryptoInfoAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
+                        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                            super.onItemRangeInserted(positionStart, itemCount)
+                            rvCryptoInfo.smoothScrollToPosition(0)
+                        }
+                    })
                 }
             }
 
