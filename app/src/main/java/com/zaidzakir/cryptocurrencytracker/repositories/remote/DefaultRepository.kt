@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.liveData
+import androidx.room.withTransaction
 import com.zaidzakir.cryptocurrencytracker.BuildConfig
 import com.zaidzakir.cryptocurrencytracker.data.CryptoPagingSource
 import com.zaidzakir.cryptocurrencytracker.data.local.CoinDatabase
@@ -13,9 +14,12 @@ import com.zaidzakir.cryptocurrencytracker.data.remote.NewsApi
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoCoinMetaData
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CryptoMarketMainResponse
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoTimeSeriesResponse.CryptoTimeSeriesMain
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
+import com.zaidzakir.cryptocurrencytracker.util.NetworkBoundResource
 import com.zaidzakir.cryptocurrencytracker.util.Resource
+import kotlinx.coroutines.delay
 import java.lang.Exception
 import javax.inject.Inject
 
@@ -39,9 +43,9 @@ class DefaultRepository @Inject constructor(
             pagingSourceFactory = {CryptoPagingSource(lunarCrushApi)}
         ).liveData
 
-    override suspend fun getCoinsMarket(): Resource<CryptoMarketMainResponse> {
+    override suspend fun getCoinsMarket(sort: String, order: Boolean): Resource<CryptoMarketMainResponse> {
         return try {
-            val response = lunarCrushApi.getCoinsMarket()
+            val response = lunarCrushApi.getCoinsMarket(sort = sort, order = order)
             if (response.isSuccessful) {
                 response.body()?.let { cryptoResponse ->
                     return@let Resource.Success(cryptoResponse)
@@ -105,6 +109,37 @@ class DefaultRepository @Inject constructor(
     override suspend fun saveCoinMetaData(cryptoCoinMetaData: List<MetaData>) {
         coinDatabase.getCoinDataDao().insertCoinMetaData(cryptoCoinMetaData)
     }
+
+    override suspend fun getCoinTimeSeries(symbol: String): Resource<CryptoTimeSeriesMain> {
+        return try {
+            val response = lunarCrushApi.getCoinTimeSeries(symbol = symbol)
+
+            if (response.isSuccessful) {
+                response.body()?.let { cryptoTimeSeriesMain ->
+                    return@let Resource.Success(cryptoTimeSeriesMain)
+                } ?: Resource.Error("An unknown error occurred")
+            } else {
+                Resource.Error("An unknown error occurred")
+            }
+        } catch (e: Exception) {
+            return Resource.Error("Something went wrong! $e")
+        }
+    }
+
+    fun getCoinDataNBR(sort: String, order: Boolean) = NetworkBoundResource(
+            query = {
+                coinDatabase.getCoinDataDao().getCoinData()
+            },
+            fetch = {
+                lunarCrushApi.getCoinsMarket(sort = sort, order = order)
+            },
+            saveFetchResult = { coinData ->
+                coinDatabase.withTransaction {
+                    coinDatabase.getCoinDataDao().deleteCoinData()
+                    coinDatabase.getCoinDataDao().insertCoinData(coinData.body()!!.data)
+                }
+            }
+    )
 
 
 }

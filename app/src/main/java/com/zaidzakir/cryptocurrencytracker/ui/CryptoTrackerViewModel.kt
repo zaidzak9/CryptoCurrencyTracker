@@ -1,10 +1,12 @@
 package com.zaidzakir.cryptocurrencytracker.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData
 import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.MetaData
+import com.zaidzakir.cryptocurrencytracker.data.remote.cryptoTimeSeriesResponse.Data
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.Article
 import com.zaidzakir.cryptocurrencytracker.data.remote.newsResponse.NewsResponse
 import com.zaidzakir.cryptocurrencytracker.repositories.remote.DefaultRepository
@@ -28,6 +30,7 @@ class CryptoTrackerViewModel @Inject constructor(
         class Success(val cryptoResponse: List<CoinData>) : Events()
         class CryptoMetaSuccess(val cryptoResponse: List<MetaData>) : Events()
         class NewsSuccess(val cryptoResponse: Resource<NewsResponse>) : Events()
+        class CryptoTimeSeriesSuccess(val cryptoTimeSeriesResponse: List<Data>) : Events()
         object Failure : Events()
         object Loading : Events()
         object Empty : Events()
@@ -39,10 +42,28 @@ class CryptoTrackerViewModel @Inject constructor(
     private val _cryptoNewsFlow = MutableStateFlow<Events>(Events.Empty)
     val cryptoNewsFlow: StateFlow<Events> = _cryptoNewsFlow
 
-    //this way loads all data using state flow, instead now im using paging line 97
-    fun getCryptoMarket() = viewModelScope.launch(Dispatchers.IO) {
+    private val _cryptoTimeSeriesFlow = MutableStateFlow<Events>(Events.Empty)
+    val cryptoTimeSeriesFlow: StateFlow<Events> = _cryptoTimeSeriesFlow
+
+    fun getCryptoTimeSeries(symbol: String) = viewModelScope.launch(Dispatchers.IO) {
+        _cryptoTimeSeriesFlow.value = Events.Loading
+        when (val cryptoTimeSeriesResponse = defaultRepository.getCoinTimeSeries(symbol)) {
+            is Resource.Error -> _cryptoTimeSeriesFlow.value = Events.Failure
+            is Resource.Success -> {
+                val cryptoTimeSeriesResponse = cryptoTimeSeriesResponse.data?.data
+                if (cryptoTimeSeriesResponse == null) {
+                    _cryptoTimeSeriesFlow.value = Events.Failure
+                } else {
+                    _cryptoTimeSeriesFlow.value = Events.CryptoTimeSeriesSuccess(cryptoTimeSeriesResponse)
+                }
+            }
+        }
+    }
+
+    //this way loads all data using state flow
+    fun getCryptoMarket(sort: String, order: Boolean) = viewModelScope.launch(Dispatchers.IO) {
         _cryptoMarketFlow.value = Events.Loading
-        when (val cryptoResponse = defaultRepository.getCoinsMarket()) {
+        when (val cryptoResponse = defaultRepository.getCoinsMarket(sort, order)) {
             is Resource.Error -> _cryptoMarketFlow.value = Events.Failure
             is Resource.Success -> {
                 val cryptoResponse = cryptoResponse.data!!.data
@@ -54,6 +75,9 @@ class CryptoTrackerViewModel @Inject constructor(
             }
         }
     }
+
+    //get data using paging
+    val cryptoResponseFromPaging = defaultRepository.getCoinsMarketPaging().cachedIn(viewModelScope)
 
     fun getCoinMetaData() = viewModelScope.launch(Dispatchers.IO) {
         _cryptoMarketFlow.value = Events.Loading
@@ -99,10 +123,11 @@ class CryptoTrackerViewModel @Inject constructor(
     //to retrieve information about coin
     fun getSavedCryptoMetaData() = defaultRepository.getSavedCoinMetaData()
 
-    val cryptoResponseFromPaging = defaultRepository.getCoinsMarketPaging().cachedIn(viewModelScope)
-
     fun deleteArticle(article: Article) = viewModelScope.launch {
         defaultRepository.deleteArticle(article)
     }
+
+    //get data using network bound resource
+    fun getCryptoMarketNBR(sort: String, order: Boolean) = defaultRepository.getCoinDataNBR(sort, order).asLiveData()
 
 }

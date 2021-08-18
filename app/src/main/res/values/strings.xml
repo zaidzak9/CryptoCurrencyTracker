@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Crypto Currency Tracker</string>
+    <string-array name="spinner_time_array">
+        <item>Sort Order</item>
+        <item>Low to High</item>
+        <item>High to Low</item>
+    </string-array>
+    <string-array name="spinner_other_array">
+        <item>Sort by Value</item>
+        <item>Price</item>
+        <item>Percent Change (24 Hours)</item>
+        <item>Percent Change (1 Hours)</item>
+        <item>Rank</item>
+        <item>Market Cap</item>
+    </string-array>
 </resources>

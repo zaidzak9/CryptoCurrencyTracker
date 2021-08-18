@@ -4,16 +4,37 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/design_default_color_primary_dark"
-        android:textAlignment="center"
-        android:textSize="25sp"
-        android:text="wallet "
+    <ImageView
+        android:id="@+id/ivWallet"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_empty_wallet"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvWallet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You have no coins in your wallet"
+        app:layout_constraintBottom_toTopOf="@+id/ivWallet"
+        style="@style/Theme.CryptoCurrencyTracker"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        style="@style/Theme.CryptoCurrencyTracker"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivWallet" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

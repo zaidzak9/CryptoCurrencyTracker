@@ -6,16 +6,18 @@
         android:title="News"
         android:icon="@drawable/ic_news" />
 
-    <item android:id="@+id/cryptoTrackerFragment"
+    <item
+        android:id="@+id/cryptoTrackerFragment"
         android:title="Market"
         android:icon="@drawable/ic_bar_chart" />
 
-    <item android:id="@+id/myWalletFragment"
+    <item
+        android:id="@+id/myWalletFragment"
         android:title="Wallet"
         android:icon="@drawable/ic_wallet" />
 
-    <item android:id="@+id/settingsFragment"
-        android:title="Settings"
-        android:icon="@drawable/ic_settings" />
+    <!--    <item android:id="@+id/settingsFragment"-->
+    <!--        android:title="Settings"-->
+    <!--        android:icon="@drawable/ic_settings" />-->
 
 </menu>

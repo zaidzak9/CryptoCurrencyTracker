@@ -11,6 +11,9 @@
         <action
             android:id="@+id/action_cryptoTrackerFragment_to_myWalletFragment"
             app:destination="@id/myWalletFragment" />
+        <action
+            android:id="@+id/action_cryptoTrackerFragment_to_cryptoInfoFragment"
+            app:destination="@id/cryptoInfoFragment" />
     </fragment>
     <fragment
         android:id="@+id/myWalletFragment"
@@ -64,5 +67,13 @@
         <action
             android:id="@+id/action_savedNewsFragment_to_articleFragment"
             app:destination="@id/articleFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cryptoInfoFragment"
+        android:name="com.zaidzakir.cryptocurrencytracker.ui.CryptoInfoFragment"
+        android:label="CryptoInfoFragment">
+        <argument
+            android:name="CoinData"
+            app:argType="com.zaidzakir.cryptocurrencytracker.data.remote.cryptoResponse.CoinData" />
     </fragment>
 </navigation>

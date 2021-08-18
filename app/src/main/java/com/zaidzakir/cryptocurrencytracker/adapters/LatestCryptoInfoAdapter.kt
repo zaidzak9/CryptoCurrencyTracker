@@ -1,5 +1,6 @@
 package com.zaidzakir.cryptocurrencytracker.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,26 +51,27 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
         coinFilterList = differ.currentList
         var cryptoImage = cryptoHashData[crypto.id]
         var cryptoTrend = crypto.pch
-
         holder.itemView.apply {
             Glide.with(this).load(cryptoImage).into(ivCryptoImage)
+            tvValueChange.text = "(${cryptoTrend.toString()})"
             when {
                 cryptoTrend!! > 0.0 -> {
+                    tvValueChange.setTextColor(Color.GREEN)
                     Glide.with(this).load(R.drawable.ic_arrow_up).into(ivCryptoTrend)
+
                 }
                 cryptoTrend!! < 0.0 -> {
+                    tvValueChange.setTextColor(Color.RED)
                     Glide.with(this).load(R.drawable.ic_arrow_down).into(ivCryptoTrend)
                 }
                 else -> {
+                    tvValueChange.setTextColor(Color.YELLOW)
                     Glide.with(this).load(R.drawable.ic_dash).into(ivCryptoTrend)
                 }
             }
             Glide.with(this).load(cryptoImage).into(ivCryptoImage)
-            Glide.with(this).load(cryptoImage).into(ivCryptoImage)
-            Glide.with(this).load(cryptoImage).into(ivCryptoImage)
-
             tvCryptoName.text = crypto.n
-            tvCryptoPrice.text = " USD ${String.format("%.2f", crypto.p)}"
+            tvCryptoPrice.text = " USD ${String.format("%.4f", crypto.p)}"
             setOnClickListener {
                 onItemClickListener?.let {
                     it(crypto)
@@ -108,8 +110,11 @@ class LatestCryptoInfoAdapter : RecyclerView.Adapter<LatestCryptoInfoAdapter.Cry
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 println("filter publishResults: ${results?.values}")
+                if (results?.values != null) {
                     coinFilterList = results?.values as MutableList<CoinData>
                     differ.submitList(coinFilterList)
+                }
+
             }
 
         }
